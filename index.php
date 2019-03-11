@@ -1,2124 +1,5435 @@
 <?php
-/*
-سلام دوستان این سورس ضدلینک ترکیبی رو بخاطر این که خیلیا دنبال سورس خوب بودن اوپن میکنم 
-بیشتر نیتم اینه که جلو خرج الکیتونو بگیرم اون مقدار پولی که به سورس ضدلینک میدین رو جای 
-واجب ازش استفاده کنید... خوش باشیدو خرم 
-#التماس_دعا
-#سیناالفام
-@tel_fire
-@telfire
-*/
-//===========  sina alfa ===========//
-ob_start();
-error_reporting(0);
+include "base.php";
 
-set_time_limit(0);
-
-flush();
-
-define('API_KEY','726643395:AAH3Jii2EnnxfJQoXp9dE_S0Aq7Ve3vDtPw');
-//============ sina alfa ===========//
-function bot($method,$datas=[]){
-    $url = "https://api.telegram.org/bot".API_KEY."/".$method;
-    $ch = curl_init();
-    curl_setopt($ch,CURLOPT_URL,$url);
-    curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-    curl_setopt($ch,CURLOPT_POSTFIELDS,$datas);
-    $res = curl_exec($ch);
-    if(curl_error($ch)){
-        var_dump(curl_error($ch));
-    }else{
-        return json_decode($res);
-    }
-}
-function sendmessage($chat_id, $text)
-{
-    bot('sendMessage', [
-        'chat_id' => $chat_id,
-        'text' => $text,
-        'parse_mode' => "MarkDown"
-    ]);
-}
-function SendMessage2($ChatId, $TextMsg)
-{
- makereq('sendMessage',[
-'chat_id'=>$ChatId,
-'text'=>$TextMsg,
-]);
-}
-function SendSticker($ChatId, $sticker_ID){
- makereq('sendSticker',[
-'chat_id'=>$ChatId,
-'sticker'=>$sticker_ID
-]);
-}
-function sendaction($chat_id, $action){
-    bot('sendchataction', [
-        'chat_id' => $chat_id,
-        'action' => $action
-    ]);
-}
-
-function Forward($KojaShe, $AzKoja, $KodomMSG)
-{
-    bot('ForwardMessage', [
-        'chat_id' => $KojaShe,
-        'from_chat_id' => $AzKoja,
-        'message_id' => $KodomMSG
-    ]);
-}
-function  getUserProfilePhotos($token,$from_id) {
-  @$url = 'https://api.telegram.org/bot'.$token.'/getUserProfilePhotos?user_id='.$from_id;
-  @$result = file_get_contents($url);
-  @$result = json_decode ($result);
-  @$result = $result->result;
-  return $result;
-}
-function check_filter($str){
-	global $filterget;
-	foreach($filterget as $d){
-		if (mb_strpos($str, $d) !== false) {
-			return true;
-		}
-	}
-}
-function save($filename,$TXTdata)
-	{
-	$myfile = fopen($filename, "w") or die("Unable to open file!");
-	fwrite($myfile, "$TXTdata");
-	fclose($myfile);
-	}
-//============ سینا الفا ===========//
-$update = json_decode(file_get_contents('php://input'));
-$json = file_get_contents('php://input');
-$telegram = urldecode ($json);
-$results = json_decode($telegram);
-$message = $update->message;
-$is_bot = $results->message->from->is_bot;
-$text = $update->message->text;
-$textmessage = isset($update->message->text)?$update->message->text:'';
-$from_id = $message->from->id;
-$fromm_id = $update->inline_query->from->id;
-$fromid = $update->callback_query->from->id;
-$chat_id = $message->chat->id;
-$chatid = $update->callback_query->message->chat->id;
-$message_id = $message->message_id;
-$message_id2 = $update->callback_query->message->message_id;
-$type = $update->message->chat->type;
-////////////////////////////
-$forward = $update->message->forward_from;
-$photo = $update->message->photo;
-$video = $update->message->video;
-$location = $update->message->location;
-$joinusername = $update->message->new_chat_member->from->username;
-$joinmember = $update->message->new_chat_member;
-$leftmember = $update->message->left_chat_member;
-$sticker = $update->message->sticker;
-$document = $update->message->document;
-$contact = $update->message->contact;
-$game = $update->message->game;
-$music = $update->message->audio;
-$gif = $update->message->gif;
-$voice = $update->message->voice;
-$edit = $update->edited_message;
-
-$cllfor = $update->callback_query->from->id;
-//
-$username = $update->message->from->username;
-$bcpv = file_get_contents("bcpv.txt");
-$bcgap = file_get_contents("bcgap.txt");
-
-$step = file_get_contents("step.txt");
-
-$token = ''; // 726643395:AAH3Jii2EnnxfJQoXp9dE_S0Aq7Ve3vDtPw   //////          ««« /// 
-
-$newchatmemberu = $update->message->new_chat_member->username;
-$joinusername = $update->message->new_chat_member->from->username;
-$joinmember = $update->message->new_chat_member;
-$leftmember = $update->message->left_chat_member;
-$newchatmemberu = $update->message->new_chat_member->username;
-$messageid = $update->callback_query->message->message_id;
-
-$username = $message->from->username;
-$tedadmsg = $update->message->message_id;
-$namegroup = $update->message->chat_title;
-$gpname = $update->message->chat->title;
-$gpname2 = $update->callback_query->message->chat->title;
-$data = $update->callback_query->data;
-$name = $message->from->first_name;
-                     // تاریخ
-$dt = json_decode(file_get_contents("http://virus23.mehrbot.ir/date-time/"));
-$date = $dt->date_fa;
-$time = $dt->time_fa;
-$time_zone = '0/1/0';
-$today = date("Y-m-d", time()+$time_zone);
-$expire = file_get_contents("data/$chat_id/expire.txt");
-//
-$get = file_get_contents("https://api.telegram.org/bot$token/getChatMember?chat_id=$chat_id&user_id=".$from_id);
-$info = json_decode($get, true);
-$rank = $info['result']['status'];
-$reply = $update->message->reply_to_message->message_id;
-	//////////////////
-$admin  = ; // 457907770
-$Dev = ; // 457907770
-mkdir("data");
-mkdir("data/$from_id");
-$tc = $update->message->chat->type;
-$rt = $update->message->reply_to_message;
-$replyid = $update->message->reply_to_message->message_id;
-$rtid = $update->message->reply_to_message->from->id;
-
-$channel = tel_fire; // https://t.me/joinchat/G0seOhaZoRJKvZsawQ_ZuQ
-$kanal = tel_fire; // https://t.me/joinchat/G0seOhaZoRJKvZsawQ_ZuQ
-$zekr = file_get_contents("https://site.com/1/zekr.php");
-$hadis = file_get_contents("https://site.com/1/hadis.php");
-$danestani  = file_get_contents("https://site.com/1/danestani.php");
-
-///////////----------------------------///////////
-@$locklink = file_get_contents("data/$chat_id/locklink.txt");
-@$locktag = file_get_contents("data/$chat_id/locktag.txt");
-@$lockphoto = file_get_contents("data/$chat_id/lockphoto.txt");
-@$lockforward = file_get_contents("data/$chat_id/lockforward.txt");
-@$lockvideo = file_get_contents("data/$chat_id/lockvideo.txt");
-@$locklocation = file_get_contents("data/$chat_id/locklocation.txt");
-@$locksticker = file_get_contents("data/$chat_id/locksticker.txt");
-@$lockdocument = file_get_contents("data/$chat_id/lockdocument.txt");
-@$lockcontact = file_get_contents("data/$chat_id/lockcontact.txt");
-@$lockgame = file_get_contents("data/$chat_id/lockgame.txt");
-@$lockmusic = file_get_contents("data/$chat_id/lockmusic.txt");
-@$lockgif = file_get_contents("data/$chat_id/lockgif.txt");
-@$lockvoice = file_get_contents("data/$chat_id/lockvoice.txt");
-@$lockbot = file_get_contents("data/$chat_id/lockbot.txt");
-@$fosh= file_get_contents("data/$chat_id/lockfosh.txt");
-@$opera= file_get_contents("data/$chat_id/lockopera.txt");
-@$locktext = file_get_contents("data/$chat_id/locktext.txt");
-@$lockall = file_get_contents("data/$chat_id/lockall.txt");
-@$wel = file_get_contents("data/$chat_id/wel.txt");
-@$add = file_get_contents("data/$chat_id/add.txt");
-
-@$setlink = file_get_contents("data/$chat_id/setlink.txt");
-@$settag = file_get_contents("data/$chat_id/settag.txt");
-@$setedite = file_get_contents("data/$chat_id/setedite.txt");
-@$setphoto = file_get_contents("data/$chat_id/setphoto.txt");
-@$setforward = file_get_contents("data/$chat_id/setforward.txt");
-@$setvideo = file_get_contents("data/$chat_id/setvideo.txt");
-@$setlocation = file_get_contents("data/$chat_id/setlocation.txt");
-@$setsticker = file_get_contents("data/$chat_id/setsticker.txt");
-@$setdocument = file_get_contents("data/$chat_id/setdocument.txt");
-@$setcontact = file_get_contents("data/$chat_id/setcontact.txt");
-@$setgame = file_get_contents("data/$chat_id/setgame.txt");
-@$setmusic = file_get_contents("data/$chat_id/setmusic.txt");
-@$setgif = file_get_contents("data/$chat_id/setgif.txt");
-@$setvoice = file_get_contents("data/$chat_id/setvoice.txt");
-@$settext = file_get_contents("data/$chat_id/settext.txt");
-@$sakht = file_get_contents("data/$chat_id/setsakht.txt");
-@$mt = file_get_contents("data/$chat_id/mt.txt");
-////////-------------------------------///////////
-mkdir("data/$chat_id/$from_id");
-$inch = file_get_contents("https://api.telegram.org/bot".API_KEY."/getChatMember?chat_id=@tel_fire&user_id=".$from_id);
-$start = json_encode([
-                        'inline_keyboard' => [
-                            [
-                                ['text' => "🌹معرفی ربات🌹", 'callback_data' => "a"]
-                            ],
-							 [
-                                ['text' => "🌹راهنما🌹", 'callback_data' => "b"]
-                            ],
-                            [['text'=>"🌹کانال🌹",'url'=>"http://telegram.me/tel_fire"]]
-    ]
-]);
-$place = json_encode([
-                        'inline_keyboard' => [
-                            [
-                                ['text' => "دستورات اصلی", 'callback_data' => "c"]
-                            ],
-							 [
-                                ['text' => "دستورات فرعی", 'callback_data' => "d"]
-                            ],
-							 [
-                                ['text' => "🌹برگشت🌹", 'callback_data' => "back"]
-                            ],
-    ]
-]);
-@$inlinebutton = json_encode([
-    'inline_keyboard'=>[
-           [
-         ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/tel_fire"]
-     ],
-   ]
-   ]);
-//============ سینا الفا ===========//
-if(strpos($inch , '"status":"left"') == true ) { 
-      sendAction($chat_id, 'typing');
-bot('sendMessage',[ 
-            'message_id' => $message_id2,
-        'chat_id'=>$update->message->chat->id, 
-        'text'=>"🔒 ربات قفل است.
-
-⚠️ برای فعالیت ربات لطفا در کانال ما عضو شید
-
-♻️ پس از عضویت لطفا /start را بزنید.", 
- 'parse_mode'=>'MarkDown', 
-        'reply_markup'=>json_encode([ 
-            'inline_keyboard'=>[ 
-                [ 
-                    ['text'=>"ورود به کانال",'url'=>"https://telegram.me/tel_fire"] 
-                ] 
-            ] 
-        ]) 
-    ]); 
-}
-
-elseif($text == "/start") {
-$user = file_get_contents('Member.txt');
-    $members = explode("\n",$user);
-    if (!in_array($chat_id,$members)){
-      $add_user = file_get_contents('Member.txt');
-      $add_user .= $chat_id."\n";
-     file_put_contents('Member.txt',$add_user);
-    }	
-    bot('sendMessage', [
-        'chat_id' => $chat_id,
-        'text' => "بسم الله الرحمن الرحیم
- سلام علیکم و رحمة الله و برکاته
- 
- به ربات  ضد لینک ما خوش اومدید 
-@$kanal",
-        'parse_mode' => "html",
-		'reply_markup' =>$start
-    ]);
-}
-elseif($data == "back")
-{
- bot('editMessagetext', [
-     'message_id' => $message_id2,
-        'chat_id' => $chatid,
-        'text' => "بسم الله الرحمن الرحیم
- سلام علیکم و رحمة الله و برکاته
- 
- به ربات  ضد لینک ما خوش اومدید 
-@$kanal",
-        'parse_mode' => "html",
-		'reply_markup' =>$start
-		]);
-}
-		if ($type2 == "supergroup") {
-	 if (strpos($supergrouplist , "$chat_id") == false){
- $txxt = file_get_contents('supergroups.txt');
-    $pmembersid= explode("\n",$txxt);
-    if (!in_array($chat_id,$pmembersid)){
-      $aaddd = file_get_contents('supergroups.txt');
-      $aaddd .= $chat_id."\n";
-  file_put_contents('supergroups.txt',$aaddd);
-    }
-	}
-}
-		if ($type2 == "supergroup" || $type2 == "group") {
-			if (!file_exists("data/$chat_id/owner.txt")) {
-	file_put_contents("data/$chat_id/owner.txt","".$creator['id']."");
-			}
-    }
-elseif($data == "a"){
-bot('editMessagetext', [
-        'chat_id' => $chatid,
-        'message_id' => $message_id2,
-        'text' => "از دکمه های زیر استفاده کنید
-		",
-        'parse_mode' => "html",
-		'reply_markup' =>json_encode([
-                        'inline_keyboard' => [
-                            [
-							['text' => "creator & channel", 'url' => "https://telegram.me/tel_fire"]
-                            ],
-							[
-							['text' => "راهنما", 'callback_data' => "b"]
-							],
-						    [
-                            ['text' => "🌹برگشت🌹", 'callback_data' => "back"]
-                            ]
-    ]
-])
-    ]);
-}
-elseif($data == "b"){
-bot('editMessagetext', [
-    'message_id' => $message_id2,
-        'chat_id' => $chatid,
-        'text' => "سلام علیکم دوستان گران بها
-        این ربات برای راحتی کارشما ساخته شده است 
-        وگروه های شمارو مدیریت میکند 
-        برای اینکه بتونید راحت از دستورات ربات
-        استفاده کنید میتونید از دکمه های
-        قفل اصلی و فرعی واقع در دکمه ی نظارت 
-        استفاده کنید و راهنمایی لازم رو بگیرید
-        تشکر از دوستان گران بها",
-        'parse_mode' => "html",
-        	'reply_markup' =>$place
-    ]);
-}
-elseif($data == "c"){
-bot('sendMessage', [
-    'message_id' => $message_id2,
-        'chat_id' => $chatid,
-        'text' => "🔹سلام دوستان از دستورات زیر استفاده کنید
-
-🔺اضافه کردن ربات به گروه
-
-🔸 /add
-➖➖➖➖➖➖➖➖
-🔺حذف از لیست تمامی گروه های ربات
-
-🔸 /rem
-➖➖➖➖➖➖➖➖
-🔹قفل رسانه ها
-
-🔺قفل صدا
-
-🔸 /Mute
-
-🔺ازاد کردن صدا
-
-🔸 /unmute
-➖➖➖➖➖➖➖➖
-🔺روشن کردن خوش آومدگویی
-
-🔸 /welcome on | /welcomeon
-
-🔺خاموش کردن خوش آمدگویی
-
-🔸 /welcome off | /welcomeoff
-➖➖➖➖➖➖➖➖
-🔺نمایش شناسه گروه
-
-🔸 !id
-➖➖➖➖➖➖➖➖
-🔺اطلاعات گروه
-
-🔸 /info
-➖➖➖➖➖➖➖➖
-🔺 نمایش دستورات اصلی ربات
-
-🔸 /help
-🔸 !help
-➖➖➖➖➖➖➖➖
-🔺نمایش امار گروه
-
-🔸 امار
-➖➖➖➖➖➖➖➖
-🔺دریافت ذکر روز
-
-🔸 /zeker
-
-🔺دریافت دانستنی
-
-🔸 /danestani
-
-🔺دریافت حدیث
-
-🔸 /hadis
-
-🔺دریافت ساعت و تاریخ
-
-🔸 /time
-                @tel_fire
-",
-        'parse_mode' => "html"
-    ]);
-}
-if($text == '/time'){ 
-	bot('sendMessage',[
-       'chat_id'=>$chat_id,
-        'text'=>"
-ساعت:$time
-تاریخ:$date",
-        'parse_mode'=>"MarkDown",
-            ]);
-}
-
-if($text == '/zekr'){ 
-	bot('sendMessage',[
-       'chat_id'=>$chat_id,
-        'text'=>$zekr,
-        'parse_mode'=>"MarkDown",        
-            ]);
-}
-
-if($text == '/hadis'){ 
-	bot('sendMessage',[
-       'chat_id'=>$chat_id,
-        'text'=>$hadis,
-        'parse_mode'=>"MarkDown",
-            ]);
-}
-
-if($text == '/danestani'){ 
-	bot('sendMessage',[
-       'chat_id'=>$chat_id,
-        'text'=>$danestani,
-        'parse_mode'=>"MarkDown",
-            ]);
-}
-elseif($data == "d"){
-bot('editMessagetext', [
-        'chat_id' => $chatid,
-        'message_id' => $message_id2,
-               'text'=>"از دستورات استفاده کنید
-              =============
-             -- برای قفل لینک --
-                 قفل لینک
-                 /locklink
-                /lock link 
-                 lock link
-                  locklink
-            --  برای ازاد کردنش --
-              آزاد کردن لینک
-                unlock link
-               unlocklink
-               /unlocklink
-               /unlock link
-              ==========
-              -- برای قفل عکس  --
-                 /lock photo 
-	             lock photo
-        	     /lockphoto
-	             lockphoto    
-            	قفل عکس
-             	--  برای ازاد کردنش --
-                /unlock photo
-            	/unlockphoto
-            	unlockphoto 
-	            unlock photo
-	            آزاد کردن عکس
-             	===========
-             --	قفل کردن ادیت --
-               /lock edit
-               /lockedit
-               lock edit
-               lockedit
-               قفل ادیت
-               -- برای ازاد کردنش --
-               آزاد کردن ادیت
-               /unlockedit
-               /unlock edit
-               unlockedit
-               unlock edit
-               ===========
-               -- قفل ربات  --
-               قف ربات     
-               /lock bot
-              --  ازاد کردن ربات -- 
-              /unlock bot 
-              آزاد کردن ربات
-              ====================
-              --برای قفل کردن  متن  --
-              /mute text     /mutetext
-                      قفل متن
-              --  ازاد کردن متن  --
-                 /unmute text   /unmutetext
-             آزاد کردن متن
-              ==================
-              --  برای قفل کردن کل قفل ها -- 
-              /mute all     /muteall
-              قفل همه 
-              --   ازاد کردن قفل ها --
-              /unmute all     /unmute all
-                    آزاد کردن همه 
-              ====================
-              برای فعال سازی جوین اجباری گروه
-                /join on
-                و برای غیر فعال سازی از
-                /join off
-                استفاده کنید
-               =================
-               ",
-            'parse_mode' => "html",
-		'reply_markup' =>json_encode([
-                        'inline_keyboard' => [
-						    [
-                            ['text' => "🌹برگشت🌹", 'callback_data' => "back"]
-                            ]
-    ]
-])
-    ]);
-    }
-elseif ($text == "/add" or $text == "ادد" or $text == "اضافه کردن" ) {
-if ($tc == 'group' | $tc == 'supergroup'){
-  $userr = file_get_contents('gaps.txt');
-  $memberrs = explode("\n",$userr);
-  if (!in_array($chat_id,$memberrs)){
-  $add_userr = file_get_contents('gaps.txt');
-  $add_userr .= $chat_id."\n";
-  file_put_contents('gaps.txt',$add_userr);
-}    
-  mkdir("data/$chat_id");   
-  file_put_contents("data/$chat_id/locklink.txt","✖️");    
-  file_put_contents("data/$chat_id/locktag.txt","✖️"); 
-  file_put_contents("data/$chat_id/lockphoto.txt","✖️");
-  file_put_contents("data/$chat_id/lockforward.txt","✖️");
-  file_put_contents("data/$chat_id/lockvideo.txt","✖️");
-  file_put_contents("data/$chat_id/locklocation.txt","✖️");
-  file_put_contents("data/$chat_id/locksticker.txt","✖️");
-  file_put_contents("data/$chat_id/lockdocument.txt","✖️");
-  file_put_contents("data/$chat_id/lockcontact.txt","✖️");
-  file_put_contents("data/$chat_id/lockgame.txt","✖️");
-  file_put_contents("data/$chat_id/lockmusic.txt","✖️");
-  file_put_contents("data/$chat_id/lockgif.txt","✖️");
-  file_put_contents("data/$chat_id/lockvoice.txt","✖️");
-  file_put_contents("data/$chat_id/lockbot.txt","✖️");
-  file_put_contents("data/$chat_id/lockedite.txt","✖️");
-  file_put_contents("data/$chat_id/locktext.txt","✖️"); 
-  file_put_contents("data/$chat_id/lockall.txt","✖️");
-  file_put_contents("data/$chat_id/wel.txt","✖️");   
-  file_put_contents("data/$chat_id/setlink.txt","del");
-  file_put_contents("data/$chat_id/settag.txt","del");
-  file_put_contents("data/$chat_id/setforward.txt","del");  
-  file_put_contents("data/$chat_id/setvideo.txt","del");
-  file_put_contents("data/$chat_id/setphoto.txt","del");
-  file_put_contents("data/$chat_id/setlocation.txt","del");
-  file_put_contents("data/$chat_id/setsticker.txt","del");
-  file_put_contents("data/$chat_id/setdocument.txt","del");
-  file_put_contents("data/$chat_id/setcontact.txt","del");
-  file_put_contents("data/$chat_id/setgame.txt","del"); 
-  file_put_contents("data/$chat_id/setmusic.txt","del");
-  file_put_contents("data/$chat_id/setgif.txt","del");
-  file_put_contents("data/$chat_id/setvoice.txt","del");
-  file_put_contents("data/$chat_id/settext.txt","del");
-  file_put_contents("data/$chat_id/setsakht.txt","off");   
-  file_put_contents("data/$chat_id/add.txt","✔️");		
-  sendaction($chat_id,'typing');
-  $sss = json_decode(file_get_contents("http://api.telegram.org/bot$token/sendmessage?chat_id=$chat_id&text=◻&parse_mode=html"));
-$shetmsg = $sss->result->message_id;
-$hh = $shetmsg;
-  bot('editmessagetext',[
- 'chat_id'=>$chat_id,
- 'message_id' => $hh,
- 'text'=>'◼️️◻️◻️◻️◻️'
- ]);
- bot('editMessageText',[
- 'chat_id'=>$chat_id,
- 'message_id' => $hh,
- 'text'=>'◼️◼️◻️◻️◻️'
- ]);
- bot('editMessageText',[
- 'chat_id'=>$chat_id,
- 'message_id' => $hh,
- 'text'=>'◼️◼️◼️️◻️◻️'
- ]);
- bot('editMessageText',[
- 'chat_id'=>$chat_id,
- 'message_id' => $hh,
- 'text'=>'◼️◼️◼️️◼️️◻️'
- ]);
- bot('editMessageText',[
- 'chat_id'=>$chat_id,
- 'message_id' => $hh,
- 'text'=>'◼️◼️◼️️◼️️️◼️'
- ]);
- bot('editMessageText',[
- 'chat_id'=>$chat_id,
- 'message_id' => $hh,
- 'text'=>"این گروه به لیست گروه های مدیریتی  ربات پیوست وشما میتونید با ربات انصارالمهدی مدیریت کنید
-
-  نکته : بازدن دوباره  دستور 
- add  باعث میشوید تنظیمات گروه ریست شود  
+//--------------------------//
+if($textmassage=="/start" && $tc == "private"){
   
-=============
-برای مدیریت گروه خود ازدستور 
-!help 
-استفاده کنید
-==============
-مدیریت ربات توسط دوستان بزرگوار انصار و کارگروه ربات و برنامه نویسی
-با بهترین برنامه نویس های امنیتی مجازی 
-@tel_fire" ]);
-  bot('sendMessage',[
-      'chat_id'=>$Dev,
-      'text'=>"نام گروه   : 
-      $gpname 
-                
-با ایدی $chat_id                
-در زمان و تاریخ 
-$time
-$date
-به لیست گروه های ربات پیوست.",
-      'parse_mode'=>'html',
-    ]);
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"سلام😉
+
+به ربات مدیریت گروه خوش امدید🌹
+
+از طریق این ربات راحت میتونی گروه خودت رو به صورت خودکار و بیست چهارساعته مدیریت کنی😍[کاملا رایگان]
+
+✨این ربات دارای قابلیت حذف پیام بدون اخراج کاربره
+➖➖➖➖➖
+کانال ما : 
+🆔 : @Botsorce
+➖➖➖
+
+از دکمه های زیر استفاده کن🔻",
+  'parse_mode'=>'MarkDown',
+     'reply_markup'=>json_encode([
+            	'keyboard'=>[
+				[
+				['text'=>"🛍 خرید ربات"]
+				],
+				[
+				['text'=>"💥 امکانات"],['text'=>"🚀 دریافت ربات رایگان"]
+				],
+                 [
+                   ['text'=>"🔖 راهنما"],['text'=>"🚦 پشتیبانی"]
+                ],
+				[
+			['text'=>"🤦🏻‍♂ سازنده"]
+				]
+ 	],
+            	'resize_keyboard'=>true
+       		])
+    		]);
 }
+ elseif($textmassage=="🛍 خرید ربات" && $tc == "private"){
+	
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"به بخش خرید ربات خوش امدید❤️
+➖➖➖➖➖
+💭نرخ خرید ربات به شکل زیر است
+
+دائم > 10000 هزار تومان
+➖➖➖
+➕سرور پر قدرت
+
+➕صد در صد انلاین بدون خاموشی
+
+➕پشتیبانی 24 ساعته
+
+➕امکانات فوق العاده
+➖➖➖
+کانال ما : 
+🆔 : @Ashkan41322
+",
+  'parse_mode'=>'MarkDown',
+   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+	              [
+              ['text'=>"🔹 خرید",'url'=>"telegram.me/AmIRAdminPvBot"]
+              ]
+              ],
+        ])
+            ]);
+        }
+elseif($textmassage=="💥 امکانات" && $tc == "private"){
+	
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"به بخش امکانات خوش اومدی✨
+➖➖➖➖➖
+🔸با استفاده از این بخش میتونی امکانات ربات رو به صورت 🎆 گیف ببنید😍
+
+🔹برای دریافت امکانات ربات کافیه از دکمه زیر استفاده کنید
+➖➖➖
+کانال ما : 
+🆔 : @Ashkan41322",
+  'parse_mode'=>'MarkDown',
+   'reply_markup'=>json_encode([
+    'keyboard'=>[
+	              [
+              ['text'=>"🚦 دریافت گیف امکانات"]
+              ],
+			  [
+			  ['text'=>"برگشت 🔙"]
+			  ]
+              ],
+			  'resize_keyboard'=>true
+        ])
+            ]);
+        }	
+elseif($textmassage=="برگشت 🔙" && $tc == "private"){
+	
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"به منوی اصلی بازگشتید✔️
+➖➖➖➖
+از دکمه های زیر استفاده کنید🔻",
+  'parse_mode'=>'MarkDown',
+   'reply_markup'=>json_encode([
+    'keyboard'=>[
+				[
+				['text'=>"🛍 خرید ربات"]
+				],
+				[
+				['text'=>"💥 امکانات"],['text'=>"🚀 دریافت ربات رایگان"]
+				],
+                 [
+                   ['text'=>"🔖 راهنما"],['text'=>"🚦 پشتیبانی"]
+                ],
+				[
+			['text'=>"🤦🏻‍♂ سازنده"]
+				]
+ 	],
+            	'resize_keyboard'=>true
+       		])
+    		]);
 }
-if($text == '/rem' && $from_id == $Dev && $type == "supergroup"  ){
-  save("data/$chat_id/add.txt","✖️");    
-  sendaction($chat_id,'typing');
-  bot('sendMessage',[
-      'chat_id'=>$chat_id,
-      'text'=>"
-       گروه از لیست گروه های مدیریتی ربات خارج شد
-      ===============================================
-      @tel_fire
-      ",
-      'parse_mode'=>'html',
-    ]);
-}  
-if($text == '/rem' && $from_id == $Dev && $type == "supergroup"  ){    
-  bot('sendMessage',[
-      'chat_id'=>$Dev,
-      'text'=>"نام گروه   : 
-      $gpname 
-                
-با ایدی $chat_id                
-در زمان و تاریخ 
-$time          $date
-از لیست گروه های ربات خارج شد.
-===============================================
-      @tel_fire
-      ",
-      'parse_mode'=>'html',
-    ]);
-} 
-elseif($text =="/help" or $text == "help" or $text == "!help" && $add == "✔️" ){
-bot('sendMessage', [
-        'chat_id' => $chat_id,
-        'text'=>"به راهنمای اصلی خوش اومدی 
-               تو میتونی با ربات ما بهترین کیفیت 
-               و بهترین سرعت رو تجربه کنی",
-        'parse_mode' => "html",
-		'reply_markup' =>json_encode([
-                        'inline_keyboard' => [
-                     [
-                    	['text' => "تنطیمات", 'callback_data' => "d"]
-                     ],
-                      [
-                            ['text' => "🌹برگشت🌹", 'callback_data' => "back"]
-                            ]
-                      ]
+elseif($textmassage=="/creator" or $textmassage== "🤦🏻‍♂ سازنده" && $tc == "private"){
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"🎉برنامه نویسی شده به زبان php
+➖➖➖➖➖
+💁‍♂توسط :
+@Ashkan41322",
+  'parse_mode'=>'MarkDown',
+    'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+	              [
+              ['text'=>"🔸 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+              ],
+			  [
+			  ['text'=>"🔹 سفارش طراحی ربات",'url'=>"https://telegram.me/Botsorce"]
+			  ]
+              ],
+        ])
+    		]);
+}	
+ //groupmanager
+ // settings inline
+ elseif($data=="media" && $fm == $owners2){
+         bot('editmessagetext',[
+             'chat_id'=>$chatid,
+  'message_id'=>$messageid,
+  'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+✔️ = حذف پیام
+✖️ = حذف نشدن پیام",
+	'reply_markup'=>json_encode([
+	'resize_keyboard'=>true,
+	'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+	]
+	])
+	]);
+	}
+	 elseif($data=="other" && $fm == $owners2){
+         bot('editmessagetext',[
+             'chat_id'=>$chatid,
+  'message_id'=>$messageid,
+  'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+✔️ = حذف پیام
+✖️ = حذف نشدن پیام",
+	'reply_markup'=>json_encode([
+	'resize_keyboard'=>true,
+	'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+	]
+	])
+	]);
+	}
+elseif($data=="settings" && $fm == $owners2){
+         bot('editmessagetext',[
+             'chat_id'=>$chatid,
+  'message_id'=>$messageid,
+  'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+🔖لطفا بخش مورد نظر خود را انتخاب کنید",
+	'reply_markup'=>json_encode([
+	'resize_keyboard'=>true,
+	'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 تنظیمات رسانه",'callback_data'=>'media'],['text'=>"⚒ تنظیمات مدیریت",'callback_data'=>'other']
+ ],
+  [
+ ['text'=>"📌 قفل همه",'callback_data'=>'text'],['text'=>"$mute_all2",'callback_data'=>'lockall']
+ ],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'back'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+	]
+	])
+	]);
+	}
+  elseif($data=="back"){
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+   'text'=>"به تنظیمات گروه بازگشتید✔️
+➖➖➖➖➖➖➖
+از منوی زیر استفاده کنید🔻",
+    'parse_mode'=>'MarkDown',
+    'reply_markup'=>json_encode([
+    'resize_keyboard'=>true,
+    'inline_keyboard'=>[
+   [
+   ['text'=>"⚙ تنظیمات",'callback_data'=>'settings']
+   ],
+    [
+   ['text'=>"🚦 اطلاعات گروه",'callback_data'=>'groupe'],['text'=>"🔖 راهنما",'callback_data'=>'help']
+   ],
+   [
+   ['text'=>"🗓 شارژ گروه",'callback_data'=>'charge']
+   ],
+   [
+['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"▶️ صحفه بعد",'callback_data'=>'panel2']
+  ],
+     [
+   ['text'=>"✖️ خروج",'callback_data'=>'exit']
+   ],
+  	]
+  	])
+  	]);
+  	}
+
+  elseif($textmassage=="/panel" or $textmassage=="panel"){
+	if ( $status == 'creator' or $status == 'administrator' or $from_id == $Dev){
+  if ($tc == 'group' | $tc == 'supergroup'){
+	save("data/$chat_id/owner.txt","$from_id");
+  	bot('sendmessage',[
+  	'chat_id'=>$chat_id,
+  	'text'=>"به پنل مدیریت گروه خوش امدید❤️
+➖➖➖➖➖➖➖
+🔻از دکمه های زیر استفاده کنید",
+    'parse_mode'=>'MarkDown',
+  	'reply_markup'=>json_encode([
+  	'resize_keyboard'=>true,
+  	'inline_keyboard'=>[
+   [
+   ['text'=>"⚙ تنظیمات",'callback_data'=>'settings']
+   ],
+    [
+   ['text'=>"🚦 اطلاعات گروه",'callback_data'=>'groupe'],['text'=>"🔖 راهنما",'callback_data'=>'help']
+   ],
+   [
+   ['text'=>"🗓 شارژ گروه",'callback_data'=>'charge']
+   ],
+   [
+['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"▶️ صحفه بعد",'callback_data'=>'panel2']
+  ],
+     [
+   ['text'=>"✖️ خروج",'callback_data'=>'exit']
+   ],
+  	]
+  	])
+  	]);
+  	}
+    }	
+  }
+  elseif($data=="charge" && $fm == $owners2){
+$timeadd= file_get_contents("data/$chatid/timeadd.txt");
+$dataadd = file_get_contents("data/$chatid/dataadd.txt");
+$charge = file_get_contents("data/$chatid/charge.txt");
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"به بخش میزان شارژ گروه خوش امدید💎
+➖➖➖➖➖➖➖➖
+🔖اطلاعات گروه شما :
+
+🔸ایدی گروه : [$chatid]
+
+🔹نام گروه : [$gpname]
+➖➖➖➖
+اطلاعات تاریخ انقضای گروه🔻",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+				   [
+				   ['text'=>"🔻تاریخ اضافه شدن🔻",'callback_data'=>"text"]
+				   ],
+				   [
+				   ['text'=>"⏰ $timeadd",'callback_data'=>'text']
+				   ],
+				   [
+				   ['text'=>"🔻زمان اضافه شدن🔻",'callback_data'=>"text"]
+				   ],
+				   [
+				   ['text'=>"📆 $dataadd",'callback_data'=>'text']
+				   ],
+				    [
+				   ['text'=>"🔻شارژ گروه🔻",'callback_data'=>"text"]
+				   ],
+				   				   [
+				   ['text'=>"🔅 $charge",'callback_data'=>'text']
+				   ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'back']
+					 ],
+                     ]
+               ])
+       ]);
+  }
+	elseif($data=="exit" && $fm == $owners2){
+            bot('deletemessage',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+           ]);
+    }
+elseif($data=="groupe" && $fm == $owners2){
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"به بخش اطلاعت گروه خوش امدید🎯
+➖➖➖➖
+🔸نام گروه : [$gpname]
+
+🔹ایدی گروه : [$chatid]
+
+💭تعداد پیام ها : [$messageid]
+
+💥سازنده گروه : [$owners2]",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+				   [
+				   ['text'=>"🔗 لینک گروه",'callback_data'=>"link"],['text'=>"🚩 قوانین گروه",'callback_data'=>'rules']
+				   ],
+				   [
+				   ['text'=>"🏵 لیست ساکت گروه",'callback_data'=>'silentlist']
+				   ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'back']
+					 ],
+                     ]
                ])
            ]);
     }
-///========================///
-if($text == '/mute all' or $text == '/muteall' or $text == 'قفل همه' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockall == "✖️"){    
-file_put_contents("data/$chat_id/lockall.txt","✔️");    
-SendMessage($chat_id,"قفل همه فعال شد ✔️
-========================
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل همه فعال شد ✔️
-========================
-#channel = @$kanal 
-========================
-");
-}
-}
-}
+	elseif($data=="link" && $fm == $owners2){
+		$getlink = file_get_contents("https://api.telegram.org/bot$token/exportChatInviteLink?chat_id=$chatid");
+$jsonlink = json_decode($getlink, true);
+$getlinkde = $jsonlink['result'];
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"💭 لینک گروه شما :
+🔸 $getlinkde ",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'groupe']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+		elseif($data=="rules" && $fm == $owners2){
+$matn=file_get_contents("data/$chatid/rules.txt");
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"💭 قوانین گروه شما :
+ $matn ",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'groupe']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+		elseif($data=="silentlist" && $fm == $owners2){
+$matn=file_get_contents("data/$chatid/silent.txt");
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"💭 لیست افراد ساکت گروه :
+➖➖➖➖➖➖➖➖
+🔸 $matn ",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'groupe']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+	    elseif($data=="panel2" && $fm == $owners2){
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"به پنل مدیریت گروه خوش امدید❤️[بخش دوم]
+➖➖➖➖➖➖➖
+🔻از دکمه های زیر استفاده کنید",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+                     [
+                     ['text'=>"🕜 ساعت و تاریخ",'callback_data'=>'td'],['text'=>"💥 تنظیمات فلود",'callback_data'=>'floods']
+					 ],
+					 [
+					 ['text'=>"💭 خوش امد گویی",'callback_data'=>'welcome']
+					 ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'back']
+					 ],
+					    [
+   ['text'=>"✖️ خروج",'callback_data'=>'exit']
+   ],
+                     ]
+               ])
+           ]);
+    }
+			    elseif($data=="welcome" && $fm == $owners2){
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"✨به بخش خوش امد گویی خوش امدید
+➖➖➖➖➖➖➖➖
+🚩 از دکمه های زیر استفاده کنید",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+                     [
+                     ['text'=>"🎗خوش امدگویی",'callback_data'=>'text'],['text'=>"$welcome2",'callback_data'=>'pwelcome']
+					 ],
+					 [
+					 ['text'=>"📜 متن خوش امد",'callback_data'=>'textwelcome']
+					 ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'panel2']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+				    elseif($data=="textwelcome" && $fm == $owners2){
+			$textwelcome= file_get_contents("data/$chatid/textwelcome.txt");
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"متن خوش امد گویی گروه :
+$textwelcome",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'welcome']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+					    elseif($data=="pwelcome" && $welcome2=="✔️"  && $fm == $owners2){
+			save("data/$chatid/welcome.txt","✖️");
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"
+➖➖➖➖➖➖➖➖
+🚩 از دکمه های زیر استفاده کنید
+➖➖➖
+خوش امد گویی خاموش شد ❌",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+				     [
+                     ['text'=>"🎗خوش امدگویی",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'pwelcome']
+					 ],
+			    	 [
+					 ['text'=>"📜 متن خوش امد",'callback_data'=>'textwelcome']
+					 ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'panel2']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+						    elseif($data=="pwelcome" && $welcome2=="✖️"  && $fm == $owners2){
+			save("data/$chatid/welcome.txt","✔️");
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"
+➖➖➖➖➖➖➖➖
+🚩 از دکمه های زیر استفاده کنید
+➖➖➖
+خوش امد گویی روشن شد ✅",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+				     [
+                     ['text'=>"🎗خوش امدگویی",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'pwelcome']
+					 ],
+					 [
+					 ['text'=>"📜 متن خوش امد",'callback_data'=>'textwelcome']
+					 ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'panel2']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+		    elseif($data=="td" && $fm == $owners2){
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"به بخش دریافت ساعت و تاریخ خوش امدید😃
+➖➖➖➖➖➖➖
+🔻از دکمه های زیر استفاده کنید",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+                     [
+                     ['text'=>"⏰ ساعت",'callback_data'=>'time'],['text'=>"📅 تاریخ",'callback_data'=>'data']
+					 ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'panel2']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+			    elseif($data=="time" && $fm == $owners2){
+				$time = file_get_contents("https://provps.ir/td?td=time");
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+		 'parse_mode'=>'html',
+     'message_id'=>$messageid,
+               'text'=>"⏱ ساعت :$matn
+➖➖➖➖➖➖➖
+$time",
+		 'parse_mode'=>'html',
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+                     [
+                     ['text'=>"⏰ ساعت",'callback_data'=>'time'],['text'=>"📅 تاریخ",'callback_data'=>'data']
+					 ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'panel2']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+				    elseif($data=="data" && $fm == $owners2){
+				$date = file_get_contents("https://provps.ir/td?td=date");
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"📆 تاریخ :
+➖➖➖➖➖➖➖
+$date ",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+                     [
+                     ['text'=>"⏰ ساعت",'callback_data'=>'time'],['text'=>"📅 تاریخ",'callback_data'=>'data']
+					 ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'panel2']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+    elseif($data=="floods"  && $fm == $owners2){
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"به بخش فلود خوش امدید❤️
+➖➖➖➖➖➖➖➖
+🔹در این بخش شما میتوانید حداکثر کارکتر های پیام را تایین کنید
 
-if($text == '/unmute all' or $text == '/unmuteall' or $text == 'آزاد کردن همه' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockall == "✔️" ){    
-file_put_contents("data/$chat_id/lockall.txt","✖️");  
-SendMessage($chat_id,"قفل همه ازاد شد ️
-========================
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل همه ازاد شد
-========================
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-//.......................
-//sakht//
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/unlock strict" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setsakht.txt","off");    
-SendMessage($chat_id," #strict disabled
-");
-}
-if($text == "/lock strict" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setsakht.txt","on");    
-SendMessage($chat_id," #strict activated
-");
-}
-}
-///////////////////////////////
-if($mt == "on️"){ 
-if($text || $photo || $video || $location || $sticker || $document || $contact || $music || $gif || $voice){
-if($tch != 'member' && $tch != 'creator' && $tch != 'administrator'){
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
+🔸توجه داشته باشید عدد باید بین 1 تا 20 باشد",
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+                   [
+                   ['text'=>"🔖 قفل فلود",'callback_data'=>'text'],['text'=>"$floods2",'callback_data'=>'lockflood']
+                   ],
+                    [
+                   ['text'=>"➖",'callback_data'=>'f-'],['text'=>"$flood2",'callback_data'=>"numflood"],['text'=>"➕",'callback_data'=>'f+']
+                   ],
+				   [
+				   ['text'=>"🔙 برگشت",'callback_data'=>'back'],['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+				   ],
+                     ]
+               ])
+           ]);
+    }
+    elseif($data=="help" && $fm == $owners2){
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"به بخش راهنما خوش امدید❤️
+➖➖➖➖➖➖➖➖
+یک گزینه را انتخاب نمایید🔻",
+'parse_mode'=>'MarkDown',
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+                     [
+                     ['text'=>"🔹عمومی",'callback_data'=>'helpall'],['text'=>"🔸مدیریتی",'callback_data'=>'helpmod']
+					 ],
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'back']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+	    elseif($data=="helpall" && $fm == $owners2){
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"🚩دستورات عمومی\n➖➖➖➖➖\n\n/bachekojai [متن به فارسی]\n💭دریافت لوگو بچه کجایی\n\n/logo [متن به انگلیسی]\n💭دریافت لوگو با طرح کلاسیک\n\n/me\n💭دریافت اطلاعاتی درباره شما\n\n/ping\n💭اطمینان از انلاینی ربات\n\n/id\n💭دریافت اطلاعات شما به همراه عکس\n\n/id [رپیلای]\n💭دریافت اطلاعات فرد با ریپلای\n\n/info\n💭دریافت اطلاعات گروه و شما\n\n/voice [متن به انگلیسی]\n💭تبدیل متن به ویس\n\n/nerkh\n💭دریافت نرخ خرید ربات و ارتباط با پشتیبانی\n\n/photo\n💭تبدیل استیکر به عکس\n\n/sticker\n💭تبدیل عکس به استیکر\n➖➖➖\n🔸در جای که سیمبول های [] وجود دارد در دستورات از ان ها استفاده نکنید\n\n🔹روی دستورات کلیک نکنید ان هارو تایپ کنید\n---------\n🚀کانال ما : \n@Botsorce",
+'parse_mode'=>'html',
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'help']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+	    elseif($data=="helpmod" && $fm == $owners2){
+            bot('editmessagetext',[
+                'chat_id'=>$chatid,
+     'message_id'=>$messageid,
+               'text'=>"🚩دستورات مدیریتی
+➖➖➖➖
+/panel 
+💭دریافت پنل مدیریت گروه
+
+/automatic
+💭فعال کردن قفل ها به صورت خودکار و مدیریت خود کار گروه
+
+/rmsg [1-99]
+💭پاک کردن پیام های اخیر گروه
+
+/promote [ریپلای]
+💭تنظیم فرد به عنوان معاون ربات
+
+/demote [ریپلای]
+💭تنزل فرد از مقام معاون گروه
+
+/del [ریپلای]
+💭پاک کردن پیام با ریپلای
+
+/kick [ریپلای]
+💭اخراج فرد از گروه
+
+/welcome enable
+💭روشن کردن خوش امد
+
+/welcome disable
+💭خاموش کردن خوش امد
+
+/setwelcome [متن]
+💭تنظیم پیام خوش امد
+
+/setflood [عدد]
+💭تنظیم حساسیت پیام مکرر
+
+/setname [نام]
+💭تنظیم نام گروه
+
+/setdescription [متن]
+💭تنظیم اطلاعات گروه
+
+/pin [ریپلای]
+💭سنجاق کردن پیام مورد نظر
+
+/unpin [ریپلای] 
+💭برداشتن پیام از حالت سنجاق
+
+/delphoto 
+💭حذف عکس گروه
+
+/setphoto
+💭تنظیم عکس گروه
+
+/link
+💭دریافت لینک گروه
+
+/setrules [متن]
+💭تنظیم قوانین گروه
+
+/rules
+💭دریافت قوانین گروه
+
+/mute all
+💭ساکت کردن گروه
+
+/unmute all
+💭غیر فعال کردن سکوت گروه
+
+/silent
+💭افزودن فرد به لیست سکوت گروه
+
+/unsilent
+💭خارج کردن فرد از لیست سکوت گروه
+
+/silentlist
+💭دریافت لیست سکوت گروه
+
+/check
+💭دریافت شارژ گروه
+
+➖➖➖
+🔸در جای که سیمبول های [] وجود دارد در دستورات از ان ها استفاده نکنید
+
+🔹روی دستورات کلیک نکنید ان هارو تایپ کنید
+—-------
+🚀کانال ما : 
+@Botsorce",
+'parse_mode'=>'html',
+               'reply_markup'=>json_encode([
+                   'inline_keyboard'=>[
+					 [
+					 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"🔙 برگشت",'callback_data'=>'help']
+					 ],
+                     ]
+               ])
+           ]);
+    }
+		  elseif($data=="lockall" && $mute_all2=="✔️" && $fm == $owners2){
+    save("data/$chatid/mute_all.txt","✖️");
+	save("data/$chatid/locktelegram.txt","✖️");
+	save("data/$chatid/lockenglish.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+🔖لطفا بخش مورد نظر خود را انتخاب کنید",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 تنظیمات رسانه",'callback_data'=>'media'],['text'=>"⚒ تنظیمات مدیریت",'callback_data'=>'other']
+ ],
+ [
+ ['text'=>"📌 قفل همه",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockall']
+ ],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'back'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+	]
+	])
+	]);
+	}
+			  elseif($data=="lockall" && $mute_all2=="✖️" && $fm == $owners2){
+    save("data/$chatid/mute_all.txt","✔️");
+	save("data/$chatid/locktelegram.txt","✔️");
+	save("data/$chatid/lockenglish.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+🔖لطفا بخش مورد نظر خود را انتخاب کنید",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 تنظیمات رسانه",'callback_data'=>'media'],['text'=>"⚒ تنظیمات مدیریت",'callback_data'=>'other']
+ ],
+ [
+ ['text'=>"📌 قفل همه",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockall']
+ ],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'back'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+	]
+	])
+	]);
+	}
+  elseif($data=="lockphoto" && $lockphoto2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockphoto.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل عکس غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockphoto" && $lockphoto2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockphoto.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل عکس فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockvideo" && $lockvideo2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockvideo.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ویدیو غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                    
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+				   ]
+             ])
+         ]);
+  }
+  elseif($data=="lockvideo" && $lockvideo2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockvideo.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ویدیو فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+               
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockgame" && $lockgame2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockgame.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل اینلاین غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+          
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockgame" && $lockgame2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockgame.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل اینلاین فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+          
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+         ]
+             ])
+         ]);
+  }
+  elseif($data=="locksticker" && $locksticker2=="✔️" && $fm == $owners2){
+    save("data/$chatid/locksticker.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل استیکر غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+             
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="locksticker" && $locksticker2=="✖️" && $fm == $owners2){
+    save("data/$chatid/locksticker.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل استیکر فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockvoice" && $lockvoice2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockvoice.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ویس غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+               
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"?? برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockvoice" && $lockvoice2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockvoice.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ویس فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                  
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockaudio" && $lockaudio2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockaudio.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل اهنگ غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+              
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockaudio" && $lockaudio2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockaudio.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل اهنگ فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                 
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockforward" && $lockforward2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockforward.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل فوروارد غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+          
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockforward" && $lockforward2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockforward.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل فوروارد فعال شد✅
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+               
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockcontact" && $lockcontact2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockcontact.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال مخاطب غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockcontact" && $lockcontact2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockcontact.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال مخاطب فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                  
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockluction" && $locklocation2=="✔️" && $fm == $owners2){
+    save("data/$chatid/locklocation.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال مکان غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockluction" && $locklocation2=="✖️" && $fm == $owners2){
+    save("data/$chatid/locklocation.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال مکان فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockfosh" && $lockfosh2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockfosh.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+??ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال کلمات رکیک غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockfosh" && $lockfosh2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockfosh.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال کلمات رکیک فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockoperator" && $lockoperator2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockoperator.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال تبلیغات اوپراتورها غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockoperator" && $lockoperator2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockoperator.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال تبلیغات اوپراتورها فعال شد✅
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockedit" && $lockedit2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockedit.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ویرایش متن غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                 [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockedit" && $lockedit2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockedit.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ویرایش متن فعال شد✅
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                 [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockusername" && $lockusername2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockusername.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال هشتگ و یوزرنیم غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockusername" && $lockusername2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockusername.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال یوزرنیم و تگ فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="locklink" && $locklink2=="✔️" && $fm == $owners2){
+    save("data/$chatid/locklink.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل لینک  غیر فعال شد❌",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                  	]
+             ])
+         ]);
+  }
+  elseif($data=="locklink" && $locklink2=="✖️" && $fm == $owners2){
+    save("data/$chatid/locklink.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل لینک فعال شد✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                  	]
+             ])
+         ]);
+  }
+  elseif($data=="lockbots2" && $lockbots2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockbots.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ورود ربات های دیگر غیر فعال شد ❌
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockbots2" && $lockbots2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockbots.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ورود ربات های دیگر فعال شد ✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+    elseif($data=="locktelegram" && $locktelegram2=="✔️" && $fm == $owners2){
+    save("data/$chatid/locktelegram.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل فارسی غیر فعال شد ❌
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="locktelegram" && $locktelegram2=="✖️" && $fm == $owners2){
+    save("data/$chatid/locktelegram.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل فارسی فعال شد ✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+      elseif($data=="lockdocument" && $lockdocument2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockdocument.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال فایل غیر فعال شد ❌
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockdocument" && $lockdocument2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockdocument.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال فایل فعال شد ✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+        elseif($data=="lockgif" && $lockgif2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockgif.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال 🎆 گیف غیر فعال شد ❌
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockgif" && $lockgif2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockgif.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال 🎆 گیف فعال شد ✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"$lockvideo_note2",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+          elseif($data=="locktg" && $locktg2=="✔️" && $fm == $owners2){
+    save("data/$chatid/locktg.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل پیام ورود و خروج غیر فعال شد ❌
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="locktg" && $locktg2=="✖️" && $fm == $owners2){
+    save("data/$chatid/locktg.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل پیام ورود خروج فعال شد ✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"$lockenglish2",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+            elseif($data=="lockenglish" && $lockenglish2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockenglish.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال کلمات انگلیسی غیر فعال شد ❌
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockenglish" && $lockenglish2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockenglish.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال کلمات انگلیسی فعال شد ✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+ ['text'=>"🔗 لينک",'callback_data'=>'text'],['text'=>"$locklink2",'callback_data'=>'locklink']
+ ],
+  [
+ ['text'=>"🔹 هشتگ [@#]",'callback_data'=>'text'],['text'=>"$lockusername2",'callback_data'=>'lockusername']
+ ],
+  [
+ ['text'=>"📝 ویرایش پیام",'callback_data'=>'text'],['text'=>"$lockedit2",'callback_data'=>'lockedit']
+ ],
+  [
+ ['text'=>"💭تبلیغات اوپراتورها",'callback_data'=>'text'],['text'=>"$lockoperator2",'callback_data'=>'lockoperator']
+ ],
+  [
+ ['text'=>"✏️ فحش",'callback_data'=>'text'],['text'=>"$lockfosh2",'callback_data'=>'lockfosh']
+ ],
+ [
+['text'=>"🤖 ورود ربات ها",'callback_data'=>'text'],['text'=>"$lockbots2",'callback_data'=>'lockbots2']
+],
+[
+['text'=>"🇮🇷 فارسی",'callback_data'=>'text'],['text'=>"$locktelegram2",'callback_data'=>'locktelegram']
+],
+[
+['text'=>"🇬🇧 انگلیسی",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockenglish']
+],
+  [
+ ['text'=>"📨 فوروارد",'callback_data'=>'text'],['text'=>"$lockforward2",'callback_data'=>'lockforward']
+ ],
+[
+['text'=>"🚦 خدمات تلگرام",'callback_data'=>'text'],['text'=>"$locktg2",'callback_data'=>'locktg']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+              elseif($data=="lockvideo_note" && $lockvideo_note2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockvideo_note.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال پیام ویدیویی غیر فعال شد ❌
+",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockvideo_note" && $lockvideo_note2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockvideo_note.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"🔖تنظیمات گروه :
+➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chatid]
+🔹نام گروه : [$gpname]
+➖➖➖➖➖
+قفل ارسال پیام ویدیویی فعال شد ✅",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+ [
+['text'=>"📂 فایل",'callback_data'=>'text'],['text'=>"$lockdocument2",'callback_data'=>'lockdocument']
+],
+[
+['text'=>"🎆 گیف",'callback_data'=>'text'],['text'=>"$lockgif2",'callback_data'=>'lockgif']
+],
+[
+['text'=>"👁‍🗨 پیام ویدیویی",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockvideo_note']
+],
+  [
+ ['text'=>"🏠 ارسال مکان",'callback_data'=>'text'],['text'=>"$locklocation2",'callback_data'=>'lockluction']
+ ],
+   [
+ ['text'=>"🏖 تصویر",'callback_data'=>'text'],['text'=>"$lockphoto2",'callback_data'=>'lockphoto']
+ ],
+  [
+ ['text'=>"📱 ارسال شماره",'callback_data'=>'text'],['text'=>"$lockcontact2",'callback_data'=>'lockcontact']
+ ],
+  [
+ ['text'=>"🎹 موسیقی",'callback_data'=>'text'],['text'=>"$lockaudio2",'callback_data'=>'lockaudio']
+ ],
+  [
+ ['text'=>"🎧 صدا",'callback_data'=>'text'],['text'=>"$lockvoice2",'callback_data'=>'lockvoive']
+ ],
+  [
+ ['text'=>"🌈 استیکر",'callback_data'=>'text'],['text'=>"$locksticker2",'callback_data'=>'locksticker']
+ ],
+  [
+ ['text'=>"🎮 بازی",'callback_data'=>'text'],['text'=>"$lockgame2",'callback_data'=>'lockgame']
+ ],
+ [
+['text'=>"📽 فیلم",'callback_data'=>'text'],['text'=>"$lockvideo2",'callback_data'=>'lockvideo']
+],
+[
+['text'=>"🔙 برگشت",'callback_data'=>'settings'],['text'=>"🎉 کانال ما",'url'=>'t.me/Botsorce']
+],
+                    ]
+             ])
+         ]);
+  }
+  
+//leave and rem
+elseif($textmassage == '/leave' && $from_id = $Dev or $textmassage == 'leave' && $from_id = $Dev){
+bot('LeaveChat',[
+  'chat_id'=>$chat_id
   ]);
-  SendMessage($chat_id,"سلام🌹
-$name 
-برا اینکه تو گروه بخوای چت کنی باید تو کانال ما جوین بشی وگرنه پیام هات پاک میشه
-بعد از ورود به کانال برگرد تو گروه و با خیال راحت از چت کردن لذت ببر
-ایدی کانال ما:
-🆔: @$kanal 
-========================");
-
-}
-}
-}
-//=================////////////////
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/join on"){
-SendMessage($chat_id,"وضعیت جوین روشن شد");    
-file_put_contents("data/$chat_id/mt.txt","on️"); 
-}
-
-
-if($text == "/join off"){
-SendMessage($chat_id,"وضعیت جوین خاموش شد");   
-file_put_contents("data/$chat_id/mt.txt","off");
-}
-}
-//============= قفل ها  ============//
-if($text == '/locklink' or $text == "قفل لینک" or $text == "/lock link" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locklink == "✖️"){    
-  file_put_contents("data/$chat_id/locklink.txt","✔️");    
-SendMessage($chat_id,"قفل لینک  فعال شد
-========================
-#channel = @$kanal 
-========================");
-}else{
-    SendMessage($chat_id,"قفل لینک  فعال شد
-========================
-#channel = @$kanal 
-========================");
-}
-}
-}  
-
-if($text == '/unlock link' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locklink == "✔️" ){    
-file_put_contents("data/$chat_id/locklink.txt","✖️");  
-SendMessage($chat_id,"قفل لینک  غیر فعال شد
-========================
-#channel = @$kanal 
-========================
-");
-}else{
-sendMessage($chat_id,"قفل لینک  غیر فعال شد
-========================
-#channel = @$kanal
-========================
-");
-}
-}
-}
-///////////////////==================================
-if(preg_match('/^(.*)([Hh]ttp|[Hh]ttps|t.me)(.*)|([Hh]ttp|[Hh]ttps|t.me)(.*)|(.*)([Hh]ttp|[Hh]ttps|t.me)|(.*)[Tt]elegram.me(.*)|[Tt]elegram.me(.*)|(.*)[Tt]elegram.me|(.*)[Tt].me(.*)|[Tt].me(.*)|(.*)[Tt].me/',$text) ){    
-preg_match('/^(.*)([Hh]ttp|[Hh]ttps|t.me)(.*)|([Hh]ttp|[Hh]ttps|t.me)(.*)|(.*)([Hh]ttp|[Hh]ttps|t.me)|(.*)[Tt]elegram.me(.*)|[Tt]elegram.me(.*)|(.*)[Tt]elegram.me|(.*)[Tt].me(.*)|[Tt].me(.*)|(.*)[Tt].me/',$text,$match);
-if($rank != "creator" && $rank != "administrator"){
-if($locklink == "✔️" || $lockall == "✔️" ){     
-if($setlink == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setlink == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به علت ارسال لینک  حذف شد  🔰
-=========================================
-#Channel  :  @$kanal");
-}
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){   
-if($text == "/link del" && $add == "✔️"  && $type == "supergroup" ){
-save("data/$chat_id/setlink.txt","del");    
-SendMessage($chat_id,"پیام حاوی لینک حذف میشود
-");
-}
-if(preg_match('/^(.*)([@]@|[@]@|@)(.*)|([#]#|[#]#|#)(.*)|(.*)([@]@|[@]@|@)|(.*)[@]@(.*)|[@]@(.*)|(.*)[@]@|(.*)[@]@(.*)|[@]@(.*)|(.*)[@]@/',$text) ){
-preg_match('/^(.*)([@]@|[@]@|@)(.*)|([#]#|[#]#|#)(.*)|(.*)([@]@|[@]@|@)|(.*)[@]@(.*)|[@]@(.*)|(.*)[@]@|(.*)[@]@(.*)|[@]@(.*)|(.*)[@]@/',$text,$match);
-if($rank != "creator" && $rank != "administrator"){
-if($locktag == "✔️" || $lockall == "✔️" ){     
-if($settag == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($settag == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن تگ و ایدی حذف شد 🔰
-
-=========================================
-#Channel  :  @$kanal");
-}
-}
-}
-}
-///////////////==============////
-if($text == '/lock tag' or $text == 'قفل تگ' or $text == '/locktag'  && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locktag == "✖️"){    
-file_put_contents("data/$chat_id/locktag.txt","✔️");    
-SendMessage($chat_id,"قفل تگ فعال شد ✔️
-========================
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل تگ فعال شد ✔️
-	========================
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == '/unlock tag' or $text == '/unlocktag'  or $text == 'آزاد کردن تگ' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locktag == "✔️" ){    
-file_put_contents("data/$chat_id/locktag.txt","✖️");  
-SendMessage($chat_id,"قفل تگ ازاد شد  ✔️
-	========================
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل تگ ازاد شد  ✔️
-	========================
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == "/tag del" && $add == "✔️"  && $type == "supergroup" ){
-if($rank == "creator" or $rank == "administrator" ){      
-file_put_contents("data/$chat_id/settag.txt","del");    
-SendMessage($chat_id,"از این پس هرکسی تگ بفرستد پیام حاوی تگ دار او حذف میشود
-	========================
-#channel = @$kanal 
-========================
-");
-}
-}
-
-if($text == "/tag kick" && $add == "✔️"  && $type == "supergroup" ){
-if($rank == "creator" or $rank == "administrator" ){      
-save("data/$chat_id/settag.txt","kick");    
-SendMessage($chat_id," ازاین پس هرکسی  تگ بفرستد از گروه حذف میشود ✔️
-	========================
-#channel = @$kanal 
-========================
-");
-}
-}
-////////=======////
-if($rank == "creator" or $rank == "administrator" ){   
-if($text == "/link del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setlink.txt","del");    
-SendMessage($chat_id," 🔰 از این پس هرکسی لینک بفرستد از گروه خارج خواهد شد
-=========================================
-#Channel  :  @$kanal
-");
-}
-if($text == "/link kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setlink.txt","kick");    
-SendMessage($chat_id,"🔰 از این پس هرکسی لینک بفرستد از گروه خارج خواهد شد
-=========================================
-#Channel  :  @$kanal
-");
-}
-}
-//////======================/////////
-if($text == '/lock bot' or $text == '/lockbot' or $text == 'قفل ربات' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockbot == "✖️"){    
-file_put_contents("data/$chat_id/lockbot.txt","✔️");    
- SendMessage($chat_id,"قفل ربات فعال شد	✔️
-	هر رباتی دعوت شود بلافاصله حذف خواهد شد
-	========================
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل ربات فعال شد	✔️
-	هر رباتی دعوت شود بلافاصله حذف خواهد شد
-	========================
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-
-if($lockbot == "✔️" ){ 
-if (preg_match('/^(.*)([Bb][Oo][Tt])/s',$newchatmemberu) && $lockbot == "✔️"  && $newchatmemberu != "social_test_bot") {
+  }
+  elseif($textmassage == '/rem' && $from_id = $Dev or $textmassage == 'rem' && $from_id = $Dev){
 bot('sendMessage',[
- 'chat_id'=>$chat_id,
- 'text'=>'ban bot.',
-  'parse_mode'=>'html'
- ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
-  'user_id'=>$update->message->new_chat_member->id
-  ]);
-}
-}
+  'chat_id'=>$chat_id,
+  'text'=>"گروه از لیست گروه هی پشتیبانی ربات حذف شد✅
+➖➖➖➖
+🔖اطلاعات گروه شما :
 
-if($text == '/unlock bot' or $text == '/unlockbot' or $text == 'آزاد کردن ربات' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockbot == "✔️" ){    
-file_put_contents("data/$chat_id/lockbot.txt","✖️");  
-SendMessage($chat_id," قفل ربات غیر فعال شد ✔️
-========================
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id," قفل ربات غیر فعال شد ✔️
-========================
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-/////////======//////
-if($joinmember){
-if($wel == "✔️"){    
-sendaction($chat_id, typing);
-        bot('sendmessage', [
-                'chat_id' =>$chat_id,
-                'text' =>" بسم الله الرحمن الرحیم
- سلام علیکم و رحمة الله و برکاته
- $name  به گروه خوش اومدی ",
-        ]);
-  }   
-}
+🔸ایدی گروه : [$chat_id]
 
-if($text == "/welcome on" or $text == "/welcomeon" or $text == "خوش آمد گویی فعال"&& $add == "✔️"){
-if($add == "✔️"){   
-if($rank == "creator" or $rank == "administrator"){
-save("data/$chat_id/wel.txt","✔️");    
-sendaction($chat_id, typing);
-        bot('sendmessage', [
-                'chat_id' =>$chat_id,
-                'text' =>"خوش آمد گویی فعال شد",
-        ]);
-  }   
-}
-}
-if($text == "/welcome off" or $text == "/welcomeoff" or $text == "خوش آمد گویی غیر فعال" && $add == "✔️"){
-if($add == "✔️"){    
-if($rank == "creator" or $rank == "administrator"){     
-save("data/$chat_id/wel.txt","✖️");   
-sendaction($chat_id, typing);
-        bot('sendmessage', [
-                'chat_id' =>$chat_id,
-                'text' =>"خوش آمد گویی غیر فعال شد",
-        ]);
-  }    
-}
-}
+🔹نام گروه : [$namegroup]
 
-//////////////////////..............................///////////////////////
-if($text == "/id" or $text == "/Id" or $text == "!id" or $text == "id" or $text == "ایدی"){
+🔖دیگر پیام های این گروه برسی نمیشود
+➖➖➖➖➖
+💥کانال ما :
+🚀 @Botsorce
+➖➖➖➖➖➖➖➖
+🚩توسط :\n@$username",
+		   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+unlink("data/$chat_id/chatadd.txt");
+unlink("data/$chat_id/timeadd.txt");
+unlink("data/$chat_id/dataadd.txt");
+unlink("data/$chat_id/usernameadd.txt");
+unlink("data/$chat_id/charge.txt");
+unlink("data/$chat_id/owner.txt");
+unlink("data/$chat_id/lockvideo.txt");
+unlink("data/$chat_id/lockbots.txt");
+unlink("data/$chat_id/locklink.txt");
+unlink("data/$chat_id/lockphoto.txt");
+unlink("data/$chat_id/lockedit.txt");
+unlink("data/$chat_id/lockoperator.txt");
+unlink("data/$chat_id/lockforward.txt");
+unlink("data/$chat_id/lockaudio.txt");
+unlink("data/$chat_id/locksticker.txt");
+unlink("data/$chat_id/lockvoice.txt");
+unlink("data/$chat_id/lockcontact.txt");
+unlink("data/$chat_id/locklocation.txt");
+unlink("data/$chat_id/lockfosh.txt");
+unlink("data/$chat_id/lockjoin.txt");
+unlink("data/$chat_id/lockgame.txt");
+unlink("data/$chat_id/lockdecument.txt");
+unlink("data/$chat_id/lockusername.txt");
+unlink("data/$chat_id/lockflood.txt");
+unlink("data/$chat_id/locktelegram.txt");
+unlink("data/$chat_id/lockdocument.txt");
+unlink("data/$chat_id/lockgif.txt");
+unlink("data/$chat_id/locktg.txt");
+unlink("data/$chat_id/lockenglish.txt");
+unlink("data/$chat_id/lockvideo_note.txt");
+unlink("data/$chat_id/mute_all.txt");
+unlink("data/$chat_id/welcome.txt");
+unlink("data/$chat_id/lockflood.txt");
+unlink("data/$chat_id/numflood.txt");
+unlink("data/$chat_id/textwelcome.txt");
+unlink("data/$chat_id/rules.txt");
+unlink("data/$chat_id/silent.txt");
+unlink("data/$chat_id/photogp.png");
+rmdir("data/$chat_id");
+   }   
+
+ // tools and cmd
+elseif($textmassage=="/rules" or $textmassage=="/rules"){
+if ($tc == 'group' | $tc == 'supergroup'){  
+$matn=file_get_contents("data/$chat_id/rules.txt");
+
+ bot('sendMessage',[
+    'chat_id'=>$chat_id,
+    'text'=>"$matn",
+		 'parse_mode'=>'html',
+		   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }   
+}
+elseif ( strpos($textmassage , '/setrules') !== false) {
+	if ($from_id == $Dev or $from_id == $owners){
+  $te = explode(" ",$textmassage);
+if ($te['1'] != "") {
+    $code = str_replace("/setrules","","$textmassage");
+file_put_contents("data/$chat_id/rules.txt",$code);
+
+ bot('sendMessage',[
+    'chat_id'=>$chat_id,
+    'text'=>"قوانین جدید ثبت شد",
+		   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }   
+}
+}
+elseif($rt && $textmassage=="/pin" && $from_id == "$owners" or $rt && $textmassage=="pin" && $from_id == "$owners"){
 if ($tc == 'group' | $tc == 'supergroup'){
-$getuserprofile = getUserProfilePhotos($token,$from_id);
-$cuphoto = $getuserprofile->total_count;
-$getuserphoto = $getuserprofile->photos[0][0]->file_id;
-bot('sendphoto',[
-    'photo'=>$getuserphoto,
-     'chat_id'=>$chat_id,
-    'caption'=>"
-🔹 عکس شما  🔹 
-    ⚜️نام شما = $name 
-🔰ایدی شما =  $from_id
-〰〰〰〰〰〰〰〰〰〰
-🔗ایدی گپ = $chat_id
-🖋نام گپ = $gpname 
-$time         $date
-",
-'parse_mode'=>'html'
-    ]); 
-}}
-if($text == "/id" or $text == "/Id" or $text == "!id" or $text == "id" or $text == "ایدی"){
-$getuserprofile = getUserProfilePhotos($token,$from_id);
-$cuphoto = $getuserprofile->total_count;
-$getuserphoto = $getuserprofile->photos[0][0]->file_id;
-bot('sendphoto',[
-    'photo'=>$getuserphoto,
-     'chat_id'=>$from_id,
-    'caption'=>"
-🔹 عکس شما  🔹 
-    ⚜️نام شما = $name 
-🔰ایدی شما =  $from_id
-〰〰〰〰〰〰〰〰〰〰
-$time
-$date
-",
-    'parse_mode'=>'html'
-    ]); 
-}
-if($reply && $text =="/pin" && $add == "✔️"){
-if($add == "✔️"){     
-if($rank == "creator" or $rank == "administrator"){
+
  bot('pinChatMessage',[
     'chat_id'=>$chat_id,
-    'message_id'=> $update->message->reply_to_message->message_id
+    'message_id'=>$replyid
       ]);
-   }
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"#انجام شد.",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
 }
-}
+ elseif($rt && $textmassage=="/kick" && $from_id == $owners or $rt && $textmassage=="kick" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
 
-if( $text =="/unpin" && $add == "✔️"){
-if($add == "✔️"){ 
-if($rank == "creator" or $rank == "administrator"){
- bot('unpinChatMessage',[
-    'chat_id'=>$chat_id,
-      ]);
-   }
-}
-}
-////=====================////
-if($text == '/mute photo' or $text == '/mutephoto' or $text == 'قفل عکس' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockphoto == "✖️"){    
-file_put_contents("data/$chat_id/lockphoto.txt","✔️");    
-SendMessage($chat_id,"قفل عکس فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل عکس فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}}}
-if($text == '/unmute photo' or $text == '/unmutephoto' or $text == 'آزاد کردن قفل عکس' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockphoto == "✔️" ){    
-file_put_contents("data/$chat_id/lockphoto.txt","✖️");  
-SendMessage($chat_id,"قفل عکس غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل عکس غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}}}
-if($rank == "creator" or $rank == "administrator" ){
-if($text == "/photo del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setphoto.txt","del");    
-SendMessage($chat_id,"هر پیام حاوی عکس حذف میشود
-");
-}}
-if($text == "/photo kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setphoto.txt","kick");    
-SendMessage($chat_id," فرد ارسال کننده عکس از گروه حذف میشود
-");}}
-if($photo){
-if($rank != "creator" && $rank != "administrator"){
-if($lockphoto == "✔️" || $lockall == "✔️" ){      
-if($setphoto == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setphoto == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن عکس از گروه اخراج شد");
-}}}}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute forward' or $text == '/muteforward' or $text == "قفل فروارد" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockforward == "✖️"){    
-file_put_contents("data/$chat_id/lockforward.txt","✔️");    
-SendMessage($chat_id,"قفل فروارد فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل فروارد فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}}}
-if($text == '/unmute forward' or $text == '/unmuteforward' or $text == "آزاد کردن قفل فروارد" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockforward == "✔️" ){    
-file_put_contents("data/$chat_id/lockforward.txt","✖️");  
-SendMessage($chat_id,"قفل فروارد غیرفعال شد
-========================             
-#channel = @$kanal 
-========================");
-}else{
-SendMessage($chat_id,"قفل فروارد غیرفعال شد
-========================             
-#channel = @$kanal 
-========================");
-}}}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/forward del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setforward.txt","del");    
-SendMessage($chat_id,"پیام فروارد شده از گروه حذف میشود
-");
-}
-if($text == "/forward kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setforward.txt","kick");    
-SendMessage($chat_id," هرکسی متن فروارد بفرستد از گروه اخراج میشود
-");
-}
-}
-if($forward){
-if($rank != "creator" && $rank != "administrator"){
-if($lockforward == "✔️" || $lockall == "✔️" ){     
-if($setforward == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setforward == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فروارد کردن پی ام  اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute video' or $text == '/mutevideo' or $text == "قفل فیلم" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockvideo == "✖️"){    
-file_put_contents("data/$chat_id/lockvideo.txt","✔️");    
-SendMessage($chat_id,"قفل فیلم فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================");
-}else{
-SendMessage($chat_id,"قفل فیلم فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================");
-}
-}
-}
-if($text == '/unmute video' or $text == '/unmutevideo' or $text == "آزاد کردن فیلم" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockvideo == "✔️" ){    
-file_put_contents("data/$chat_id/lockvideo.txt","✖️");  
-SendMessage($chat_id,"قفل فیلم غیرفعال شد
-========================             
-#channel = @$kanal 
-========================");
-}else{
-SendMessage($chat_id,"قفل فیلم غیرفعال شد
-========================             
-#channel = @$kanal 
-========================");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/video del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setvideo.txt","del");    
-SendMessage($chat_id,"پیام حاوی فیلم حذف میشود
-");
-}
-if($text == "/video kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setvideo.txt","kick");    
-SendMessage($chat_id,"هرکسی فیلم بفرستد از گروه حذف میشود
-");
-}
-}
-if($video){
-if($rank != "creator" && $rank != "administrator"){
-if($lockvideo == "✔️" || $lockall == "✔️" ){     
-if($setvideo == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setvideo == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن فیلم از گروه اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute location' or $text == '/mutelocation' or $text == "قفل لوکشین" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locklocation == "✖️"){    
-file_put_contents("data/$chat_id/locklocation.txt","✔️");    
-SendMessage($chat_id,"قفل لوکشین فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================");
-}else{
-SendMessage($chat_id,"قفل لوکشین فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================");
-}
-}
-}
-if($text == '/unmute location' or $text == '/unmutelocation' or $text == "آزاد کردن لوکشین" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locklocation == "✔️" ){    
-file_put_contents("data/$chat_id/locklocation.txt","✖️");  
-SendMessage($chat_id,"قفل لوکشین غیرفعال شد
-========================             
-#channel = @$kanal 
-========================");
-}else{
-    SendMessage($chat_id,"قفل لوکشین غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/location del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setlocation.txt","del");    
-SendMessage($chat_id,"پیام حاوی لوکشین حذف میشود
-");
-}
-if($text == "/location kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setlocation.txt","kick");    
-SendMessage($chat_id," هرکسی لوکشین بفرستد از گروه حذف میشود
-");
-}
-}
-if($location){
-if($rank != "creator" && $rank != "administrator"){
-if($locklocation == "✔️" || $lockall == "✔️" ){    
-if($setlocation == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setlocation == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id
-به دلیل فرستادن مکان یا لوکیشن از گروه اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute sticker' or $text == '/mutesticker' or $text == "قفل استیکر" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locksticker == "✖️"){    
-file_put_contents("data/$chat_id/locksticker.txt","✔️");    
-SendMessage($chat_id,"قفل استیکر فعال شد✔️
-========================             
-#channel = @$kanal 
-========================");
-}else{
-    SendMessage($chat_id,"قفل استیکر فعال شد✔️
-========================             
-#channel = @$kanal 
-========================");
-}
-}
-}
-if($text == '/unmute sticker' or $text == '/unmutesticker' or $text == "آزاد کردن استیکر" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locksticker == "✔️" ){    
-file_put_contents("data/$chat_id/locksticker.txt","✖️");  
-SendMessage($chat_id,"قفل استیکر غیرفعال شد
-========================             
-#channel = @$kanal 
-========================");
-}else{
-SendMessage($chat_id,"قفل استیکر غیرفعال شد
-========================             
-#channel = @$kanal 
-========================");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/sticker del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setsticker.txt","del");    
-SendMessage($chat_id,"پیام حاوی استیکر حذف میشود
-");
-}
-if($text == "/sticker kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setsticker.txt","kick");    
-SendMessage($chat_id,"هرکس استیکر بفرستد از گروه حذف میشود
-");
-}
-}
-if($sticker){
-if($rank != "creator" && $rank != "administrator"){
-if($locksticker == "✔️" || $lockall == "✔️" ){   
-if($setsticker == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setsticker == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن  استیکر از گروه اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute document' or $text == '/mutedocument' or $text == "قفل سند" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockdocument == "✖️"){    
-file_put_contents("data/$chat_id/lockdocument.txt","✔️");    
-SendMessage($chat_id,"قفل سند فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل سند فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == '/unmute document' or $text == '/unmutedocument' or $text == "آزاد کردن سند" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockdocument == "✔️" ){    
-file_put_contents("data/$chat_id/lockdocument.txt","✖️");  
-SendMessage($chat_id,"قفل سند غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل سند غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/document del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setdocument.txt","del");    
-SendMessage($chat_id," پیام حاوی سند حذف میشود
-");
-}
-}
-if($text == "/document kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setdocument.txt","kick");    
-SendMessage($chat_id,"هرکس سند بفرستد از گروه حذف میشود
-");
-}
-if($document){
-if($rank != "creator" && $rank != "administrator"){
-if($lockdocument == "✔️" || $lockall == "✔️" ){      
-if($setdocument == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setdocument == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن سند از گروه اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute contact' or $text == '/mutecontact' or $text == "قفل مخاطب" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockcontact == "✖️"){    
-file_put_contents("data/$chat_id/lockcontact.txt","✔️");    
-SendMessage($chat_id,"قفل مخاطب فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل مخاطب فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == '/unmute contact' or $text == '/unmutecontact' or $text == "آزاد کردن مخاطب" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockcontact == "✔️" ){    
-file_put_contents("data/$chat_id/lockcontact.txt","✖️");  
-SendMessage($chat_id,"قفل مخاطب غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل مخاطب غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/contact del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setcontact.txt","del");    
-SendMessage($chat_id,"پیام حاوی مخاطب حذف میشود
-");
-}
-if($text == "/contact kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setcontact.txt","kick");    
-SendMessage($chat_id,"هرکس مخاطب بفرستد از گروه کیک میشود
-");
-}
-}
-if($contact){
-if($rank != "creator" && $rank != "administrator"){
-if($lockcontact == "✔️" || $lockall == "✔️" ){    
-if($setcontact == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setcontact == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن شماره مخاطب از گروه اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute game' or $text == '/mutegame' or $text == "قفل بازی" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockgame == "✖️"){    
-file_put_contents("data/$chat_id/lockgame.txt","✔️");    
-SendMessage($chat_id,"قفل بازی فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل بازی فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == '/unmute game' or $text == '/unmutegame' or $text == "آزاد کردن بازی" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockgame == "✔️" ){    
-file_put_contents("data/$chat_id/lockgame.txt","✖️");  
-SendMessage($chat_id,"قفل بازی غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل بازی غیرفعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/game del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setgame.txt","del");    
-SendMessage($chat_id,"پیام حاوی بازی حذف میشود
-");
-}
-if($text == "/game kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setgame.txt","kick");    
-SendMessage($chat_id,"هرکسی بازی بفرستد از گروه کیک میشود
-");
-}
-}
-if($game){
-if($rank != "creator" && $rank != "administrator"){
-if($lockgame == "✔️" || $lockall == "✔️" ){    
-if($setgame == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setgame == "kick" || $sakht == "on" ){  
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن بازی از گروه اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute music'  && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockmusic == "✖️"){    
-file_put_contents("data/$chat_id/lockmusic.txt","✔️");    
-SendMessage($chat_id,"قفل موزیک فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل موزیک فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == '/unmute music' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockmusic == "✔️" ){    
-file_put_contents("data/$chat_id/lockmusic.txt","✖️");  
-SendMessage($chat_id,"قفل موزیک غیر فعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل موزیک غیر فعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/music del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setmusic.txt","del");    
-SendMessage($chat_id,"پیام حاوی موزیک حذف میشود
-");
-}
-if($text == "/music kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setmusic.txt","kick");    
-SendMessage($chat_id,"هرکسی موزیک بفرستد  از گروه حذف میشود
-");
-}
-}
-if($music){
-if($rank != "creator" && $rank != "administrator"){
-if($lockmusic == "✔️" || $lockall == "✔️" ){    
-if($setmusic == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setmusic == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن موزیک از گروه اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute gif' or $text == '/mutegif' or $text == "قفل گیف" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockgif == "✖️"){    
-file_put_contents("data/$chat_id/lockgif.txt","✔️");    
-SendMessage($chat_id,"قفل گیف فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل گیف فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == '/unmute gif' or $text == '/unmutegif' or $text == "آزاد کردن گیف" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockgif == "✔️" ){    
-file_put_contents("data/$chat_id/lockgif.txt","✖️");  
-SendMessage($chat_id,"قفل گیف غیر فعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل گیف غیر فعال شد
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/gif del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setgif.txt","del");    
-SendMessage($chat_id," پیام حاوی گیف حذف میشود
-");
-}
-if($text == "/gif kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setgif.txt","kick");    
-SendMessage($chat_id," هرکس گیف بفرستد با گروه خدافظی میکند
-");
-}
-}
-if($gif){
-if($rank != "creator" && $rank != "administrator"){
-if($lockgif == "✔️" || $lockall == "✔️" ){    
-if($setgif == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setgif == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id 
-به دلیل فرستادن گیف از گروه اخراج شد");
-}
-}
-}
-}
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if($text == '/mute voice' or $text == '/mutevoice' or $text == 'قفل ویس' && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockvoice == "✖️"){    
-file_put_contents("data/$chat_id/lockvoice.txt","✔️");    
-SendMessage($chat_id,"قفل ویس فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل ویس فعال شد ✔️
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == '/unmute voice' or $text == '/unmutevoice' or $text == 'آزاد کردن ویس'&& $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($lockvoice == "✔️" ){    
-file_put_contents("data/$chat_id/lockvoice.txt","✖️");  
-SendMessage($chat_id,"قفل ویس غیر فعال شد 
-========================             
-#channel = @$kanal 
-========================
-");
-}else{
-    SendMessage($chat_id,"قفل ویس غیر فعال شد 
-========================             
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/voice del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setvoice.txt","del");    
-SendMessage($chat_id,"پیام حاوی ویس حذف میشود
-");
-}
-if($text == "/voice kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/setvoice.txt","kick");    
-SendMessage($chat_id," هرکسی ویس بفرستد از گروه اخراج میشود
-");
-}
-}
-if($voice){
-if($rank != "creator" && $rank != "administrator"){
-if($lockvoice == "✔️" || $lockall == "✔️" ){      
-if($setvoice == "del" || $sakht == "off" ){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($setvoice == "kick" || $sakht == "on" ){ 
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر  $from_id 
-به دلیل فرستادن  ویس از گروه اخراج شد");
-}
-}
-}
-}
-////////////////
-if($text == '/mute text' or $text == '/mutetext' or $text =="قفل متن" && $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locktext == "✖️"){    
-file_put_contents("data/$chat_id/locktext.txt","✔️");    
-SendMessage($chat_id,"قفل متن فعال شد ✔️
-========================
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل متن فعال شد ✔️
-========================
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($text == '/unmute text'  or $text == '/unmutetext' or $text == 'آزاد کردن متن'&& $add == "✔️" && $type == "supergroup"){
-if($rank == "creator" or $rank == "administrator" ){  
-if($locktext == "✔️" ){    
-file_put_contents("data/$chat_id/locktext.txt","✖️");  
-SendMessage($chat_id,"قفل متن غیر فعال شد
-========================
-#channel = @$kanal 
-========================
-");
-}else{
-SendMessage($chat_id,"قفل متن غیر فعال شد
-	========================
-#channel = @$kanal 
-========================
-");
-}
-}
-}
-if($rank == "creator" or $rank == "administrator" ){  
-if($text == "/text del" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/settext.txt","del");    
-SendMessage($chat_id,"پیام ها حذف میشوند
-");
-}
-if($text == "/text kick" && $add == "✔️"  && $type == "supergroup" ){
-file_put_contents("data/$chat_id/settext.txt","kick");    
-SendMessage($chat_id," هرکسی متنی بفرستد حذف میشود
-");
-}
-}
-if($text){
-if($rank != "creator" && $rank != "administrator"){
-if($locktext == "✔️" || $lockall == "✔️" ){  
-if($settext == "del" || $sakht == "off"){    
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-}
-if($settext == "kick" || $sakht == "on"){  
-bot('deleteMessage',[
-'chat_id'=>$chat_id,
-'message_id'=>$message->message_id
-  ]);
-bot('kickChatMember',[
- 'chat_id'=>$chat_id,
- 'user_id'=>$update->message->from->id
-  ]);
-sendMessage($chat_id,"کاربر $from_id
-به دلیل فرستادن متن  در زمان قفل بودن متن  « از گروه اخراج شد");
-}
-}
-}
-}
-
-//////////////////////
-if($rt && $text=="/kick" && $add == "✔️"){
-if($add == "✔️"){    
-if($rank == "creator" or $rank == "administrator"){   
-sendAction($chat_id, 'typing');
-	bot('kickChatMember',[
+	bot('KickChatMember',[
     'chat_id'=>$chat_id,
     'user_id'=>$rtid
       ]);
 bot('sendmessage',[
 	'chat_id'=>$chat_id,
-	'text'=>"کاربر از  گروه اخراج شد 😅",
-  'parse_mode'=>'MarkDown',
-	]);
-	}
-}
-}
-////========================///
-elseif($text == '/ping' && $from_id == $Dev && $tc == "supergroup"){
-    bot('sendMessage', [
-        'chat_id' => $chat_id,
-    'text'=>"ادمین جان عزیز
-آنلاینم و همیشه در حال خدمت به انصارالله 
-*_________________________________*
-*🎭channel:* @tel_fire
-* Dev :* @viperstar1",
-    'parse_mode'=>'html'
-    ]);
-}
-elseif($text == '/ping' && $from_id == $from_id && $tc == "supergroup"){
-    bot('sendMessage', [
-        'chat_id' => $chat_id,
-    'text'=>"
-آنلاینم و همیشه در حال خدمت به انصارالله 
-*_________________________________*
-*🎭channel:* @tel_fire
-* Dev :* @viperstar1",
-    'parse_mode'=>'html'
-    ]);
-}
-
-if ($text && $type == "supergroup" ){
-$newmessg = $allmsg + 1;
-file_put_contents("data/allmsg.txt","$newmessg");
-}
-if ($text && $type == "private" ){
-$newmessg = $allmsgpv + 1;
-file_put_contents("data/allmsgpv.txt","$newmessg");
-}
-if ($text == "آمار"){
-$allgp_get = file_get_contents('data/allgp.txt');
-		$get_gp= explode("\n",$allgp_get);
-		$geted = count($get_gp) - 1;
-		$allmem_ = file_get_contents('Member.txt');
-		$get_all= explode("\n",$allmem_);
-		$getall = count($get_all) - 1;
-sendaction($chat_id,'typing');
-bot('sendMessage',[
-    'chat_id'=>$chat_id,
-    'text'=>"
-🎋 اعضا ~» $getall
-🎋 همه گروه های ادد شده ~» $geted",
- 'parse_mode'=>'MARKDOWN',
-   'reply_markup'=>json_encode([
-      'inline_keyboard'=>[
-	   [
-    ['text'=>"tel_fire", 'url'=>"https://telegram.me/tel_fire"]
-    ]
-    ]
-    ])
-    ]);
-}
-elseif($text=="/info" ){
-if( $from_id == "$owners" or  $from_id == $Dev or  $from_id == $admin){
+	'text'=>"کاربر اخراج شد✔️
+➖➖➖
+🔸ایدی : $re_id
+🔹یوزرنیم : @$re_user",
+	 'parse_mode'=>'html',
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	 [
+	  ['text'=> $re_name ,'url'=>"http://telegram.me/" . $re_user]
+	  ],
+	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }    
+   }
+elseif($rt && $textmassage == "/del" && $from_id == "$owners" or $rt && $textmassage == "del" && $from_id == "$owners"){
 if ($tc == 'group' | $tc == 'supergroup'){
-  sendAction($chat_id, 'typing');
+ bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$update->message->reply_to_message->message_id
+    ]);
+ }
+}
+elseif ( strpos($textmassage , '/rmsg') !== false  ) {
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($from_id == $owners){
+$num = str_replace("/rmsg","",$textmassage);
+if ($num <= 100 && $num >= 1){
+for($i=$message_id; $i>=$message_id-$num; $i--){
+bot('deletemessage',[
+ 'chat_id' => $chat_id,
+ 'message_id' =>$i,
+              ]);
+}
+bot('sendmessage',[
+ 'chat_id' => $chat_id,
+ 'text' =>"تعداد $num پیام پاک شد",
+              ]);
+}else{
+bot('sendmessage',[
+ 'chat_id' => $chat_id,
+ 'text'=>"اخطار\nعدد باید بین 1 و 100 باشد.",
+              ]);
+}
+}
+}
+}
+elseif ( strpos($textmassage , '/setname') !== false  ) {
+  $newname= str_replace("/setname","",$textmassage);
+if ($tc == 'group' | $tc == 'supergroup'){
+
+ bot('setChatTitle',[
+    'chat_id'=>$chat_id,
+    'title'=>$newname
+      ]);
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"#انجام شد.",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif ( strpos($textmassage , '/setdescription') !== false  ) {
+  $newdec= str_replace("/setdescription","",$textmassage);
+if ($tc == 'group' | $tc == 'supergroup'){
+
+ bot('setChatDescription',[
+    'chat_id'=>$chat_id,
+    'description'=>$newdec
+      ]);
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"#انجام شد.",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif($rt && $textmassage=="/unpin" && $from_id == "$owners" or $rt && $textmassage=="unpin" && $from_id == "$owners"){
+if ($tc == 'group' | $tc == 'supergroup'){
+
+ bot('unpinChatMessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$replyid
+      ]);
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"#انجام شد.",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif($textmassage=="/delphoto" && $from_id == $owners or $textmassage=="delphoto" && $from_id == $owners){
+  save("data/$from_id/file.txt","setphoto");
+if ($tc == 'group' | $tc == 'supergroup'){
+
+bot('deleteChatPhoto',[
+   'chat_id'=>$chat_id,
+     ]);
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"#انجام شد.",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif($textmassage=="/setphoto" && $from_id == $owners or $textmassage=="setphoto" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"عکس خود را بفرستید :",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif($step=="setphoto"){
+  save("data/$from_id/file.txt","none");
+if ($tc == 'group' | $tc == 'supergroup'){
+
+$photo = $update->message->photo;
+$file = $photo[count($photo)-1]->file_id;
+      $get = bot('getfile',['file_id'=>$file]);
+      $patch = $get->result->file_path;
+    file_put_contents("data/$chat_id/photogp.png",file_get_contents("https://api.telegram.org/file/bot$token/$patch"));
+bot('setChatPhoto',[
+   'chat_id'=>$chat_id,
+   'photo'=>new CURLFile("data/$chat_id/photogp.png")
+     ]);
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"#انجام شد.",
+  'parse_mode'=>'MarkDown',
+ ]);
+ unlink("data/$chat_id/photogp.png");
+ }
+}
+ elseif($textmassage=="/link" && $from_id == $owners or $textmassage=="link" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+$getlink = file_get_contents("https://api.telegram.org/bot$token/exportChatInviteLink?chat_id=$chat_id");
+$jsonlink = json_decode($getlink, true);
+$getlinkde = $jsonlink['result'];
+bot('sendmessage',[
+   'chat_id'=>$chat_id,
+   'text'=>"لینک گروه :\n$getlinkde",
+    'parse_mode'=>'html',
+     ]);
+ }
+}
+// charge
+elseif($textmassage=="/check" or $textmassage=="check" && $from_id = $owners){
+if ($tc == 'group' | $tc == 'supergroup'){  
+$matn=file_get_contents("data/$chat_id/charge.txt");
+ bot('sendMessage',[
+    'chat_id'=>$chat_id,
+    'text'=>"📆میزان شارژ گروه شما :
+➖➖➖➖➖➖
+$matn",
+		 'parse_mode'=>'html',
+		   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }   
+}
+elseif ( strpos($textmassage , '/charge') !== false) {
+if ($from_id == $Dev){
+  $te = explode(" ",$textmassage);
+if ($te['1'] != "") {
+    $code = str_replace("/charge","","$textmassage روز");
+file_put_contents("data/$chat_id/charge.txt",$code);
+ bot('sendMessage',[
+    'chat_id'=>$chat_id,
+    'text'=>"شارژ گروه تنظیم شد
+➖➖➖➖➖➖
+شارژ گروه به $code روز دیگر تنظیم شد",
+		   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }   
+}
+}
+// help
+  elseif($textmassage=="/help" or $textmassage=="راهنما" or $textmassage=="help"){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
 	bot('sendmessage',[
 	'chat_id'=>$chat_id,
-	'text'=>"شناسه کاربری گروه : *$chat_id*\nنام گروه : *$gpname*\nتعداد پیام ها : *$tedadmsg*\nنوع گروه : *$tc*",
+	'text'=>"🚩به راهنمای ربات مدیریت گروه خوش امدید🤖\n➖➖➖➖\n🔹دستورات عمومی : \n/helpall\n🔸دستورات مدیریتی \n/helpmod\n➖➖➖\n🔖تمامی دستورات ربات با علامت [/] اغاز میشود\n\n🔹روی دستورات کلیک نکنید ان هارو تایپ کنید\n---------\n🚀کانال ما : \n@Botsorce",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+  elseif($textmassage=="/helpall" or $textmassage=="helpall"){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+     'text'=>"🚩دستورات عمومی\n➖➖➖➖➖\n\n/bachekojai [متن به فارسی]\n💭دریافت لوگو بچه کجایی\n\n/logo [متن به انگلیسی]\n💭دریافت لوگو با طرح کلاسیک\n\n/me\n💭دریافت اطلاعاتی درباره شما\n\n/ping\n💭اطمینان از انلاینی ربات\n\n/id\n💭دریافت اطلاعات شما به همراه عکس\n\n/id [رپیلای]\n💭دریافت اطلاعات فرد با ریپلای\n\n/info\n💭دریافت اطلاعات گروه و شما\n\n/voice [متن به انگلیسی]\n💭تبدیل متن به ویس\n\n/nerkh\n💭دریافت نرخ خرید ربات و ارتباط با پشتیبانی\n\n/photo\n💭تبدیل استیکر به عکس\n\n/sticker\n💭تبدیل عکس به استیکر\n➖➖➖\n🔸در جای که سیمبول های [] وجود دارد در دستورات از ان ها استفاده نکنید\n\n🔹روی دستورات کلیک نکنید ان هارو تایپ کنید\n---------\n🚀کانال ما : \n@Botsorce",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+   elseif($textmassage=="/helpmod" && $from_id == $owners or $textmassage=="helpmod" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"🚩دستورات مدیریتی
+➖➖➖➖
+/panel 
+💭دریافت پنل مدیریت گروه
+
+/automatic
+💭فعال کردن قفل ها به صورت خودکار و مدیریت خود کار گروه
+
+/rmsg [1-99]
+💭پاک کردن پیام های اخیر گروه
+
+/promote [ریپلای]
+💭تنظیم فرد به عنوان معان ربات
+
+/demote [ریپلای]
+💭تنزل فرد از مقام معاون گروه
+
+/del [ریپلای]
+💭پاک کردن پیام با ریپلای
+
+/kick [ریپلای]
+💭اخراج فرد از گروه
+
+/welcome enable
+💭روشن کردن خوش امد
+
+/welcome disable
+💭خاموش کردن خوش امد
+
+/setwelcome [متن]
+💭تنظیم پیام خوش امد
+
+/setflood [عدد]
+💭تنظیم حساسیت پیام مکرر
+
+/setname [نام]
+💭تنظیم نام گروه
+
+/setdescription [متن]
+💭تنظیم اطلاعات گروه
+
+/pin [ریپلای]
+💭سنجاق کردن پیام مورد نظر
+
+/unpin [ریپلای] 
+💭برداشتن پیام از حالت سنجاق
+
+/delphoto 
+💭حذف عکس گروه
+
+/setphoto
+💭تنظیم عکس گروه
+
+/link
+💭دریافت لینک گروه
+
+/setrules [متن]
+💭تنظیم قوانین گروه
+
+/rules
+💭دریافت قوانین گروه
+
+/mute all
+💭ساکت کردن گروه
+
+/unmute all
+💭غیر فعال کردن سکوت گروه
+
+/silent
+💭افزودن فرد به لیست سکوت گروه
+
+/unsilent
+💭خارج کردن فرد از لیست سکوت گروه
+
+/silentlist
+💭دریافت لیست سکوت گروه
+
+/check
+💭دریافت شارژ گروه
+
+➖➖➖
+🔸در جای که سیمبول های [] وجود دارد در دستورات از ان ها استفاده نکنید
+
+🔹روی دستورات کلیک نکنید ان هارو تایپ کنید
+—-------
+🚀کانال ما : 
+@Botsorce",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+
+// fun and for all
+elseif($textmassage=="/time" or $textmassage=="ساعت" or $textmassage=="time"){
+$time = file_get_contents("https://provps.ir/td?td=time");
+$date = file_get_contents("https://provps.ir/td?td=date");
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"🗓 ساعت و تاریخ امروز :
+	
+⏰ ساعت : 
+🔹 $time
+
+➖➖➖➖➖
+📆 تاریخ :
+
+🔸 $date  ",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+   elseif($rt && $textmassage =="/id" or $rt && $textmassage =="ایدی" or $rt && $textmassage =="id"){
+if ($tc == 'group' | $tc == 'supergroup'){
+$getuserprofile = getUserProfilePhotos($token,$re_id);
+$cuphoto = $getuserprofile->total_count;
+$getuserphoto = $getuserprofile->photos[0][0]->file_id;
+  bot('sendphoto',[
+  'chat_id'=>$chat_id,
+'photo'=>$getuserphoto,
+  'caption'=>"💭ایدی گروه : [$chat_id]
+  
+🚦نام  : [$re_name]
+
+🔹ایدی : [$re_id]
+
+🔸یوزرنیم : [@$re_user]",
+
+     'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+   [
+    ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+    ],
+           [
+         ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+     ],
+   ]
+   ])
+   ]);
+   }    
+   }
+elseif($textmassage=="/id" or $textmassage=="ایدی" or $textmassage=="id"){
+if ($tc == 'group' | $tc == 'supergroup'){
+$getuserprofile = getUserProfilePhotos($token,$from_id);
+$cuphoto = $getuserprofile->total_count;
+$getuserphoto = $getuserprofile->photos[0][0]->file_id;
+  
+  bot('sendphoto',[
+  'chat_id'=>$chat_id,
+'photo'=>$getuserphoto,
+  'caption'=>"💭ایدی گروه : [$chat_id]
+  
+🚦نام شما : [$first_name]
+
+🔹ایدی : [$from_id]
+
+🔸یوزرنیم : [@$username]",
+
+     'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+   [
+    ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+    ],
+           [
+         ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+     ],
+   ]
+   ])
+   ]);
+   }    
+   }
+            elseif($textmassage=="/me" && $from_id == $Dev or $textmassage=="من" && $from_id == $Dev){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"🔖اطلاعات شما :
+➖➖➖➖
+🔹نام شما : [$first_name]
+🔸ایدی شما: [$from_id]
+🔅یوزرنیم : [@$username]
+💥تعداد کل پیام ها : [$tedadmsg]
+➖➖➖
+🚩 مقام شما : عه بابایی منو اذیت نکن",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }    
+   }
+      elseif($textmassage=="/me" && $from_id == $owners or $textmassage=="من" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"🔖اطلاعات شما :
+➖➖➖➖
+🔹نام شما : [$first_name]
+🔸ایدی شما: [$from_id]
+🔅یوزرنیم : [@$username]
+💥تعداد کل پیام ها : [$tedadmsg]
+➖➖➖
+🚩 مقام شما : مدیر گروه",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }    
+   }
+         elseif($textmassage=="/me" or $textmassage=="من"){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"🔖اطلاعات شما :
+➖➖➖➖
+🔹نام شما : [$first_name]
+🔸ایدی شما: [$from_id]
+🔅یوزرنیم : [@$username]
+💥تعداد کل پیام ها : [$tedadmsg]
+➖➖➖
+🚩 مقام شما : عضو عادی",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }    
+   }
+elseif($textmassage=="/nerkh" or $textmassage=="نرخ" or $textmassage=="nerkh"){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"🔖نرخ ربات مدیریت گروه
+➖➖➖➖
+1⃣ ماهانه > 3000 هزار تومان
+
+2⃣ دو ماه < 5000 هزار تومان
+
+3⃣ دائم > 10000 هزار تومان
+➖➖➖
+💥ربات پرقدرت بدون خاموشی با سرور قوی و امکانات فوق العاده",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"],['text'=>"💥خرید",'url'=>"https://telegram.me/mohammadrezajiji"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+elseif($textmassage=="/info" or $textmassage=="اطلاعات" or $textmassage=="info"){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"🔖اطلاعات :
+➖➖➖➖➖➖➖➖
+🔸ایدی گروه : [$chat_id]
+🔹تعداد پیام ها : [$tedadmsg]
+🔅نوع گروه : [$tc]
+➖➖➖➖➖
+🚀نام شما : [$first_name]
+🚦ایدی شما : [$from_id]
+💫یوزرنیم  شما : [@$username]
+➖➖➖
+💭لینک شما : [http://t.me/$username]",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+elseif($textmassage=="/ping" or $textmassage=="انلاینی" or $textmassage=="ping"){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+	bot('sendphoto',[
+	'chat_id'=>$chat_id,
+	'photo=>"https://telegra.ph/file/dbeded4538caeabe66cb2.jpg",
+	'caption'=>"@Botsorce",
+	   'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+
+elseif ( strpos($textmassage , '/logo') !== false  ) {
+$te = explode(" ",$textmassage);
+if ($te['1'] != "") {
+if ($tc == 'group' | $tc == 'supergroup'){
+
+ bot('sendphoto',[
+    'chat_id'=>$chat_id,
+    'photo'=>"http://api.monsterbot.ir/pic/?text=". $te['1'] ."&y=15&font=Steamy&fsize=90&bg=logo8",
+	'caption'=>"@Botsorce",
+	  'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+}
+elseif ( strpos($textmassage , '/bachekojai') !== false  ) {
+$te = explode(" ",$textmassage);
+if ($te['1'] != "") {
+if ($tc == 'group' | $tc == 'supergroup'){
+
+ bot('sendphoto',[
+    'chat_id'=>$chat_id,
+    'photo'=>"http://api.monsterbot.ir/pic/?text=". $te['1'] ."&y=-10&x=20&color=black&font=fa&fsize=100&bg=esm4",
+	'caption'=>"@Botsorce",
+	  'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+}
+elseif ( strpos($textmassage , '/voice') !== false  ) {
+$te = explode(" ",$textmassage);
+if ($te['1'] != "") {
+if ($tc == 'group' | $tc == 'supergroup'){
+
+ bot('sendvoice',[
+    'chat_id'=>$chat_id,
+    'voice'=>"http://tts.baidu.com/text2audio?lan=en&ie=UTF-8&text=". $te['1'] ."",
+	'caption'=>"@Botsorce",
+	  'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+}
+elseif($textmassage=="/sticker" or $textmassage=="sticker"){
+  save("data/$from_id/file.txt","sticker");
+if ($tc == 'group' | $tc == 'supergroup'){
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"عکس مورد نظر را ارسال کنید تا تبدیل به استیکر کنم",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif($step == "sticker"){
+save("data/$from_id/file.txt","none");
+if ($tc == 'group' | $tc == 'supergroup'){
+$photo = $message->photo;
+$file = $photo[count($photo)-1]->file_id;
+      $get = bot('getfile',['file_id'=>$file]);
+      $patch = $get->result->file_path;
+    file_put_contents("data/$chat_id/photogp.png",file_get_contents("https://api.telegram.org/file/bot$token/$patch"));
+bot('sendsticker',[
+ 'chat_id'=>$chat_id,
+ 'sticker'=>new CURLFile("data/$chat_id/photogp.png"),
+   'caption'=>"@Botsorce",
+   	  'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+ ]);
+ }
+}
+elseif($textmassage=="/photo" or $textmassage=="photo"){
+  save("data/$from_id/file.txt","photo");
+if ($tc == 'group' | $tc == 'supergroup'){
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"استیکر مورد نظرت رو بفرست تا تبدیل به عکس کنم",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif($step == "photo"){
+save("data/$from_id/file.txt","none");
+if ($tc == 'group' | $tc == 'supergroup'){
+$sticker = $message->sticker;
+$file = $sticker->file_id;
+      $get = bot('getfile',['file_id'=>$file]);
+      $patch = $get->result->file_path;
+    file_put_contents("data/$chat_id/photogp.png",file_get_contents("https://api.telegram.org/file/bot$token/$patch"));
+bot('sendphoto',[
+ 'chat_id'=>$chat_id,
+ 'photo'=>new CURLFile("data/$chat_id/photogp.png"),
+  'caption'=>"@Botsorce",
+  	  'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+ ]);
+ }
+}
+// setup and setowner
+if (strpos($chatadd, "$chat_id") && $from_id == $Dev) {
+if ($textmassage == "/add" && $from_id == $Dev or $textmassage == "add" && $from_id == $Dev) {
+bot('sendMessage',[
+        	'chat_id'=>$chat_id,
+        	'text'=>"گروه قبلا در لیست گروه های پشتیبانی ربات بوده است✔️
+➖➖➖➖➖➖➖
+🚩اطلاعات گروه :
+
+🔅ایدی گروه : $chat_id
+
+💭نام گروه : $namegroup
+
+🔸زمان اضافه شدن گروه : $timeadd
+
+🔹تاریخ اضافه شدن گروه : $dataadd
+
+✨یوزرنیم اضافه کننده ربات : $usernameadd
+",
+		'parse_mode'=>'MarkDown',
+		  	  'reply_markup'=>json_encode([
+    'inline_keyboard'=>[
+ 	[
+	  ['text'=>"🔸$timeadd",'callback_data'=>"text"],['text'=>"🔹$dataadd",'callback_data'=>"text"]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+ ]);
+ }
+}
+elseif ($textmassage == "/add" && $from_id == $Dev or $textmassage == "add" && $from_id == $Dev) {
+$data=file_get_contents("https://provps.ir/td?td=date");
+if ($tc == 'group' | $tc == 'supergroup'){
+mkdir("data/$chat_id");
+save("data/$chat_id/chatadd.txt", "\n$chat_id");
+save("data/$chat_id/timeadd.txt","$time");
+save("data/$chat_id/dataadd.txt","$data");
+save("data/$chat_id/usernameadd.txt","@$username");
+save("data/$chat_id/charge.txt","تنظیم نشد!");
+save("data/$chat_id/owner.txt","$from_id");
+save("data/$chat_id/lockvideo.txt","✖️");
+save("data/$chat_id/lockbots.txt","✖️");
+save("data/$chat_id/locklink.txt","✖️");
+save("data/$chat_id/lockphoto.txt","✖️");
+save("data/$chat_id/lockedit.txt","✖️");
+save("data/$chat_id/lockoperator.txt","✖️");
+save("data/$chat_id/lockforward.txt","✖️");
+save("data/$chat_id/lockaudio.txt","✖️");
+save("data/$chat_id/locksticker.txt","✖️");
+save("data/$chat_id/lockvoice.txt","✖️");
+save("data/$chat_id/lockcontact.txt","✖️");
+save("data/$chat_id/locklocation.txt","✖️");
+save("data/$chat_id/lockfosh.txt","✖️");
+save("data/$chat_id/lockjoin.txt","✖️");
+save("data/$chat_id/lockgame.txt","✖️");
+save("data/$chat_id/lockdecument.txt","✖️");
+save("data/$chat_id/lockusername.txt","✖️");
+save("data/$chat_id/lockflood.txt","✖️");
+save("data/$chat_id/locktelegram.txt","✖️");
+save("data/$chat_id/lockdocument.txt","✖️");
+save("data/$chat_id/lockgif.txt","✖️");
+save("data/$chat_id/locktg.txt","✖️");
+save("data/$chat_id/lockenglish.txt","✖️");
+save("data/$chat_id/lockvideo_note.txt","✖️");
+save("data/$chat_id/mute_all.txt","✖️");
+save("data/$chat_id/welcome.txt","✖️");
+save("data/$chat_id/lockflood.txt","✖️");
+save("data/$chat_id/numflood.txt","5");
+save("data/$chat_id/textwelcome.txt","به گروه خوش امدید");
+save("data/$chat_id/rules.txt","قوانین پیش فرض :
+1⃣گذاشتن لینک و تبلیغ کردن ممنوع
+
+2⃣اسپم کردن مجاز نیست :)
+
+3⃣فوروارد کردن از کانال ممنوع
+
+4⃣چت کردن ازاده اما نه زیاد از حد
+
+5⃣اوردن هرگونه ربات = اخراج
+
+6⃣فحاشی ممنوع،در صورت فحاشی کردن بن گلوبال خواهید شد
+
+7⃣صحبت نژاد پرستانه و مسخره کردن دیگران ممنوع
+
+8⃣موضوعات پورنوگرافی ممنوع
+
+9⃣بی احترامی به ادمین ها و اعضای گروه = اخراج
+
+
+❗️در صورت رعایت نکردن قوانین فوق از گروه محروم خواهید شد❗️
+🌹با تشکر🌹
+@Botsorce");
+SendMessage($chat_id,"گروه با موفقیت به لیست پشتیبانی ربات اضافه شد✅
+➖➖➖➖
+🔖اطلاعات گروه شما :
+
+🔸ایدی گروه : [$chat_id]
+
+🔹نام گروه : [$namegroup]
+
+➖➖➖
+
+🔸از این پس تمام پیام های گروه برسی میشود
+
+🔹برای دریافت پنل تنظیمات و راهنما دستور :
+
+/panel
+
+را ارسال کیند✔️
+➖➖➖➖➖
+💥کانال ما :
+🚀 @Botsorce
+
+➖➖➖➖➖➖➖➖
+🚩توسط :\n@$username");
+}
+}
+if ($textmassage == "/automatic" && $from_id == $owners or $textmassage == "automatic" && $from_id == $owners) {
+if ($tc == 'group' | $tc == 'supergroup'){
+save("data/$chat_id/lockvideo.txt","✖️");
+save("data/$chat_id/lockbots.txt","✔️");
+save("data/$chat_id/locklink.txt","✔️");
+save("data/$chat_id/lockphoto.txt","✖️");
+save("data/$chat_id/lockedit.txt","✔️");
+save("data/$chat_id/lockoperator.txt","✔️");
+save("data/$chat_id/lockforward.txt","✔️");
+save("data/$chat_id/lockaudio.txt","✖️");
+save("data/$chat_id/locksticker.txt","✖️");
+save("data/$chat_id/lockvoice.txt","✖️");
+save("data/$chat_id/lockcontact.txt","✔️");
+save("data/$chat_id/locklocation.txt","✖️");
+save("data/$chat_id/lockfosh.txt","✖️");
+save("data/$chat_id/lockjoin.txt","✖️");
+save("data/$chat_id/lockgame.txt","✖️");
+save("data/$chat_id/lockdecument.txt","✖️");
+save("data/$chat_id/lockusername.txt","✔️");
+save("data/$chat_id/lockflood.txt","✔️");
+save("data/$chat_id/numflood.txt","3");
+save("data/$chat_id/locktelegram.txt","✖️");
+save("data/$chat_id/lockdocument.txt","✖️");
+save("data/$chat_id/lockgif.txt","✖️");
+save("data/$chat_id/locktg.txt","✔️");
+save("data/$chat_id/lockenglish.txt","✖️");
+save("data/$chat_id/lockvideo_note.txt","✖️");
+save("data/$chat_id/mute_all.txt","✖️");
+save("data/$chat_id/welcome.txt","✖️");
+save("data/$chat_id/lockflood.txt","✖️");
+save("data/$chat_id/numflood.txt","5");
+save("data/$chat_id/textwelcome.txt","Welcome NewMember To Group");
+SendMessage($chat_id,"قفل ها برای مدیریت خودکار گروه فعال شدند");
+}
+}
+elseif($rt && $textmassage=="/promote" && $from_id == "$owners" or $rt && $textmassage=="promote" && $from_id == "$owners"){
+if ($tc == 'group' | $tc == 'supergroup'){
+
+ bot('promoteChatMember',[
+    'chat_id'=>$chat_id,
+    'user_id'=>$rtid,
+    'can_change_info'=>true,
+    'can_post_messages'=>true,
+	'can_edit_messages'=>true,
+	'can_delete_messages'=>true,
+	'can_invite_users'=>true,
+	'can_restrict_members'=>true,
+	'can_pin_messages'=>true,
+	'can_promote_members'=>true
+      ]);
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"#انجام شد.",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif($rt && $textmassage=="/demote" && $from_id == "$owners" or $rt && $textmassage=="demote" && $from_id == "$owners"){
+if ($tc == 'group' | $tc == 'supergroup'){
+
+ bot('restrictChatMember',[
+    'chat_id'=>$chat_id,
+    'user_id'=>$rtid,
+    'can_change_info'=>false,
+    'can_post_messages'=>false,
+	'can_edit_messages'=>false,
+	'can_delete_messages'=>false,
+	'can_invite_users'=>false,
+	'can_restrict_members'=>false,
+	'can_pin_messages'=>false,
+	'can_promote_members'=>false
+      ]);
+bot('sendmessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>"#انجام شد.",
+  'parse_mode'=>'MarkDown',
+ ]);
+ }
+}
+elseif (strpos($textmassage, "/setowner") !== false && $from_id == $Dev) {
+$owner = str_replace("/setowner ","",$textmassage);
+save("data/$from_id/file.txt","none");
+bot('sendMessage',[
+        	'chat_id'=>$chat_id,
+        	'text'=>"این فرد  _".$owner."_ مدیر گروه شد. ",
+		'parse_mode'=>'MarkDown'
+    		]);
+save("data/$chat_id/owner.txt","$owner");
+}
+// lock
+elseif(preg_match("/^(.*)([Hh]ttp|[Hh]ttps|t.me)(.*)|([Hh]ttp|[Hh]ttps|t.me)(.*)|(.*)([Hh]ttp|[Hh]ttps|t.me)|(.*)[Tt]elegram.me(.*)|[Tt]elegram.me(.*)|(.*)[Tt]elegram.me|(.*)[Tt].me(.*)|[Tt].me(.*)|(.*)[Tt].me/",$update->message->caption)){
+preg_match("/^(.*)([Hh]ttp|[Hh]ttps|t.me)(.*)|([Hh]ttp|[Hh]ttps|t.me)(.*)|(.*)([Hh]ttp|[Hh]ttps|t.me)|(.*)[Tt]elegram.me(.*)|[Tt]elegram.me(.*)|(.*)[Tt]elegram.me|(.*)[Tt].me(.*)|[Tt].me(.*)|(.*)[Tt].me/",$textmassage,$match,$update->message->caption);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($locklink == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+ bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif(preg_match("/^(.*)([Hh]ttp|[Hh]ttps|t.me)(.*)|([Hh]ttp|[Hh]ttps|t.me)(.*)|(.*)([Hh]ttp|[Hh]ttps|t.me)|(.*)[Tt]elegram.me(.*)|[Tt]elegram.me(.*)|(.*)[Tt]elegram.me|(.*)[Tt].me(.*)|[Tt].me(.*)|(.*)[Tt].me/",$textmassage)){
+preg_match("/^(.*)([Hh]ttp|[Hh]ttps|t.me)(.*)|([Hh]ttp|[Hh]ttps|t.me)(.*)|(.*)([Hh]ttp|[Hh]ttps|t.me)|(.*)[Tt]elegram.me(.*)|[Tt]elegram.me(.*)|(.*)[Tt]elegram.me|(.*)[Tt].me(.*)|[Tt].me(.*)|(.*)[Tt].me/",$textmassage);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($locklink == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+ bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock link" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locklink.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال لینک فعال شد.",
   'parse_mode'=>'MarkDown',
 	]);
 	}
- }}
-//============== panel ==============//
-elseif($text == "/panel" or $text == "/admin" or $text == "مدیریت"  && $from_id == $dev or $from_id == $admin){
-    sendaction($chat_id,'typing');
-bot('sendMessage',[
+}
+elseif($textmassage=="/unlock link" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locklink.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال لینک باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($update->message->photo){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockphoto == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
     'chat_id'=>$chat_id,
-    'text'=>"به به ادمین عزیز 
-    به پنل مدیریت خوش اومدید",
-    'parse_mode'=>'html',
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock photo" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockphoto.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال عکس فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock photo" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockphoto.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال عکس باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($update->message->document){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockgif == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($update->message->document){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockdocument == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock document" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockdocument.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حل",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock document" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockdocument.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حل",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->video){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockvideo == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock video" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockvideo.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال فیلم فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock video" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockvideo.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل فیلم بازشد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+
+if(preg_match("/^(.*)|(.*)/",$edit)){
+  preg_match("/^(.*)|(.*)/",$textmassage,$match);
+if ($lockedit3== "✔️"){
+if ($you != "creator" && $you != "administrator"){
+	bot('deletemessage',[
+    'chat_id'=>$chat_edit_id,
+    'message_id'=>$message_edit_id
+    ]);
+	}
+}
+}
+elseif($textmassage=="/lock edit" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockedit.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ویرایش پیام فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock edit" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockedit.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ویرایش پیام باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->game){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockgame== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock game" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockgame.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل انجام بازی در گروه فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock game" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockgame.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل انجام بازی در گروه باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->location){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($locklocation== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock location" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locklocation.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل اشتراک گزاری مکان فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock location" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locklocation.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل اشتراک گزاری مکان باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->contact){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockcontact== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock contact" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockcontact.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل اشتراک گزاری شماره فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock contact" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockcontact.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل اشتراک گزاری شماره باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if(preg_match("/^(.*)@|@(.*)|(.*)@(.*)/",$textmassage)){
+preg_match("/^(.*)@|@(.*)|(.*)@(.*)/",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockusername == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+if(preg_match("/^(.*)#|#(.*)|(.*)#(.*)/",$textmassage)){
+preg_match("/^(.*)#|#(.*)|(.*)#(.*)/",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockusername == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+if(preg_match("/^(.*)@|@(.*)|(.*)@(.*)/",$update->message->caption)){
+preg_match("/^(.*)@|@(.*)|(.*)@(.*)/",$textmassage,$match,$update->message->caption);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockusername == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+if(preg_match("/^(.*)#|#(.*)|(.*)#(.*)/",$update->message->caption)){
+preg_match("/^(.*)#|#(.*)|(.*)#(.*)/",$textmassage,$match,$update->message->caption);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockusername == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock username" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockusername.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال یوزرنیم فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/unlock username" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockusername.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال یوزرنیم باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->audio){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockaudio== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock audio" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockaudio.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال موسیقی فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock audio" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockaudio.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال موسیقی باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->voice){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockvoice == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock voice" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockvoice.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال صدا فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock voice" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockvoice.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال صدا باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->sticker){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($locksticker== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock sticker" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locksticker.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال استیکر فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock sticker" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locksticker.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال استیکر باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->decument){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockdecument== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock decument" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockdecument.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال فایل فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock decument" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockdecument.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال فایل باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->forward_from | $update->message->forward_from_chat){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockforward== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+ bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message->message_id
+    ]);
+ }
+}
+}
+}
+elseif($textmassage=="/lock forward" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockforward.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل فوروارد پیام فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}elseif($textmassage=="/unlock forward" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockforward.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل فوروارد پیام باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+//Lock Operator
+if(preg_match("/^(.*)ایرانسل|ایرانسل(.*)|(.*)ایرانسل(.*)|(.*)همراه اول(.*)|همراه اول(.*)|(.*)همراه اول/",$textmassage)){
+preg_match("/^(.*)ایرانسل|ایرانسل(.*)|(.*)ایرانسل(.*)|(.*)همراه اول(.*)|همراه اول(.*)|(.*)همراه اول/",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockoperator == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+
+elseif($textmassage=="/lock operator" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockoperator.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال تبلیغات اوپراتور ها فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/unlock operator" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockoperator.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال تبلیغات اوپراتور ها باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+//Lock Fosh
+elseif(preg_match("'^(کس)(.*)'",$textmassage)){
+preg_match("'^(کس)(.*)'",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockfosh == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif(preg_match("'^(کس ننت)(.*)'",$textmassage)){
+preg_match("'^(کس ننت)(.*)'",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockfosh == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif(preg_match("'^(بی ناموس)(.*)'",$textmassage)){
+preg_match("'^(بی ناموس)(.*)'",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockfosh == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif(preg_match("'^(دیوث)(.*)'",$textmassage)){
+preg_match("'^(دیوث)(.*)'",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockfosh == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif(preg_match("'^(کیر)(.*)'",$textmassage)){
+preg_match("'^(کیر)(.*)'",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockfosh == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+  
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+
+elseif($textmassage=="/lock fosh" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockfosh.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال فحش فعال شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/unlock fosh" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockfosh.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"قفل ارسال فحش باز شد.",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->new_chat_member | $update->message->new_chat_photo | $update->message->new_chat_title | $update->message->left_chat_member | $update->message->pinned_message | $update->message->forward_from | $update->message->forward_from_chat |  $update->message->decument | $update->message->audio | $update->message->photo | $update->message->sticker | $update->message->video | $update->message->voice | $update->message->video_note){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($mute_all== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+ bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message->message_id
+    ]);
+ }
+}
+}
+}
+elseif($textmassage=="/mute all" && $from_id == $owners or $textmassage=="mute all" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+	 save("data/$chat_id/mute_all.txt","✔️");
+	 save("data/$chat_id/locktelegram.txt","✔️");
+	 save("data/$chat_id/lockenglish.txt","✔️");
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"گروه به حالت سکوت رفت",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/unmute all" && $from_id == $owners or $textmassage=="unmute all" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+	save("data/$chat_id/mute_all.txt","✖️");
+    save("data/$chat_id/locktelegram.txt","✖️");
+	save("data/$chat_id/lockenglish.txt","✖️");
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"گروه از حالت سکوت خارج شد",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if(preg_match("/^(.*)س|س(.*)|(.*)ح|ح(.*)|(.*)ا|ا(.*)|(.*)س|(.*)س|س(.*)|(.*)ب|ب(.*)|(.*)ت|ت(.*)|(.*)ج|ج(.*)|(.*)چ|چ(.*)|(.*)خ|خ(.*)|(.*)د|د(.*)|(.*)ر|ر(.*)|(.*)ش|ش(.*)|(.*)ع|ع(.*)|(.*)ف|ف(.*)|(.*)ک|ک(.*)|(.*)ل|ل(.*)|(.*)م|م(.*)|(.*)ن|ن(.*)|(.*)و|و(.*)|(.*)ه|ه(.*)|(.*)ی|ی(.*)|(.*)ز|ز(.*)/",$textmassage)){
+preg_match("/^(.*)س|س(.*)|(.*)ح|ح(.*)|(.*)ا|ا(.*)|(.*)س|(.*)س|س(.*)|(.*)ب|ب(.*)|(.*)ت|ت(.*)|(.*)ج|ج(.*)|(.*)چ|چ(.*)|(.*)خ|خ(.*)|(.*)د|د(.*)|(.*)ر|ر(.*)|(.*)ش|ش(.*)|(.*)ع|ع(.*)|(.*)ف|ف(.*)|(.*)ک|ک(.*)|(.*)ل|ل(.*)|(.*)م|م(.*)|(.*)ن|ن(.*)|(.*)و|و(.*)|(.*)ه|ه(.*)|(.*)ی|ی(.*)|(.*)ز|ز(.*)/",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($locktelegram == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+elseif($textmassage=="/lock farsi" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locktelegram.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حله",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/unlock farsi" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locktelegram.txt","✖️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حل",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/lock english" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockenglish.txt","✔️");
+  
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حله",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/unlock english" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockenglish.txt","✖️");
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حل",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+
+if(preg_match("/^(.*)a|a(.*)|(.*)b|b(.*)|(.*)c|c(.*)|(.*)d|d(.*)e|e(.*)|(.*)f|f(.*)|(.*)g|g(.*)|(.*)h|h(.*)|(.*)i|i(.*)|(.*)j|j(.*)|(.*)k|k(.*)|(.*)l|l(.*)|(.*)m|m(.*)|(.*)n|n(.*)|(.*)o|o(.*)|(.*)p|p(.*)|(.*)q|q(.*)|(.*)r|r(.*)|(.*)s|s(.*)|(.*)t|t(.*)|(.*)w|w(.*)|(.*)v|v(.*)|(.*)w|w(.*)|(.*)x|x(.*)|(.*)y|y(.*)|(.*)z|z(.*)(.*)A|A(.*)|(.*)B|B(.*)|(.*)C|C(.*)|(.*)D|D(.*)E|E(.*)|(.*)F|F(.*)|(.*)G|G(.*)|(.*)H|H(.*)|(.*)I|I(.*)|(.*)J|J(.*)|(.*)K|K(.*)|(.*)I|I(.*)|(.*)M|M(.*)|(.*)N|N(.*)|(.*)O|O(.*)|(.*)P|P(.*)|(.*)Q|Q(.*)|(.*)R|R(.*)|(.*)S|S(.*)|(.*)T|T(.*)|(.*)W|W(.*)|(.*)V|V(.*)|(.*)w|w(.*)|(.*)X|X(.*)|(.*)Y|Y(.*)|(.*)Z|Z(.*)/",$textmassage)){
+preg_match("/^(.*)a|a(.*)|(.*)b|b(.*)|(.*)c|c(.*)|(.*)d|d(.*)e|e(.*)|(.*)f|f(.*)|(.*)g|g(.*)|(.*)h|h(.*)|(.*)i|i(.*)|(.*)j|j(.*)|(.*)k|k(.*)|(.*)l|l(.*)|(.*)m|m(.*)|(.*)n|n(.*)|(.*)o|o(.*)|(.*)p|p(.*)|(.*)q|q(.*)|(.*)r|r(.*)|(.*)s|s(.*)|(.*)t|t(.*)|(.*)w|w(.*)|(.*)v|v(.*)|(.*)w|w(.*)|(.*)x|x(.*)|(.*)y|y(.*)|(.*)z|z(.*)(.*)A|A(.*)|(.*)B|B(.*)|(.*)C|C(.*)|(.*)D|D(.*)E|E(.*)|(.*)F|F(.*)|(.*)G|G(.*)|(.*)H|H(.*)|(.*)I|I(.*)|(.*)J|J(.*)|(.*)K|K(.*)|(.*)I|I(.*)|(.*)M|M(.*)|(.*)N|N(.*)|(.*)O|O(.*)|(.*)P|P(.*)|(.*)Q|Q(.*)|(.*)R|R(.*)|(.*)S|S(.*)|(.*)T|T(.*)|(.*)W|W(.*)|(.*)V|V(.*)|(.*)w|w(.*)|(.*)X|X(.*)|(.*)Y|Y(.*)|(.*)Z|Z(.*)/",$textmassage,$match);
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockenglish == "✔️"){
+if ($status != "creator" && $status != "administrator"){
+  save("data/$from_id/file.txt","none");
+	bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message_id
+    ]);
+	}
+}
+}
+}
+
+if($update->message->new_chat_member | $update->message->new_chat_photo | $update->message->new_chat_title | $update->message->left_chat_member | $update->message->pinned_message){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($locktg== "✔️"){
+if ($status != "creator" && $status != "administrator"){
+
+ bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message->message_id
+    ]);
+ }
+}
+}
+}
+elseif($textmassage=="/lock tg" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locktg.txt","✔️");
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حله",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/unlock tg" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/locktg.txt","✖️");
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حل",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+if($update->message->video_note){
+if ($tc == 'group' | $tc == 'supergroup'){
+if ($lockvideo_note == "✔️"){
+ bot('deletemessage',[
+    'chat_id'=>$chat_id,
+    'message_id'=>$message->message_id
+    ]);
+ }
+}
+}
+
+elseif($textmassage=="/lock videonote" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockvideo_note.txt","✔️");
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حله",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($textmassage=="/unlock videonote" && $from_id == $owners){
+if ($tc == 'group' | $tc == 'supergroup'){
+  save("data/$chat_id/lockvideo_note.txt","✖️");
+	bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"حل",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+// welcome
+elseif($update->message->new_chat_title){
+if ($tc == 'group' | $tc == 'supergroup'){
+$newname = $update->message->new_chat_title;
+
+bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"نام گروه تغییر یافت به : $newname",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+elseif($update->message->new_chat_member){
+if ($tc == "group" | $tc == "supergroup"){
+if ($welcome == "✔️"){
+bot('sendmessage',[
+	'chat_id'=>$chat_id,
+	'text'=>"$textwelcome",
+  'parse_mode'=>'MarkDown',
+	]);
+	}
+}
+}
+elseif (strpos($textmassage , "/setwelcome") !== false && $from_id == $owners) {
+if ($tc == 'group' | $tc == 'supergroup'){
+$we = str_replace("/setwelcome","",$textmassage);
+save("data/$chat_id/textwelcome.txt","$we");
+SendMessage($chat_id,"#انجام شد");
+}
+}
+elseif ($textmassage == "/welcome enable" && $from_id == $owners or $textmassage == "welcome enable" && $from_id == $owners) {
+if ($tc == 'group' | $tc == 'supergroup'){
+save("data/$chat_id/welcome.txt","✔️");
+SendMessage($chat_id,"#انجام شد");
+}
+}
+elseif ($textmassage == "/welcome disable" && $from_id == $owners or $textmassage == "welcome disable" && $from_id == $owners) {
+if ($tc == 'group' | $tc == 'supergroup'){
+save("data/$chat_id/welcome.txt","✖️");
+SendMessage($chat_id,"#انجام شد");
+}
+}
+// silent
+
+if($textmassage == "/silent" && $from_id == $owners && $rt){
+  if ($tc == 'group' | $tc == 'supergroup'){
+   bot('restrictChatMember',[
+   'user_id'=>$rtid,   
+   'chat_id'=>$chat_id,
+   'can_post_messages'=>false,
+   'can_add_web_page_previews'=>false,
+   'can_send_other_messages'=>false,
+   'can_send_media_messages'=>false,
+         ]);
+  bot('sendMessage',[
+'chat_id'=>$chat_id,
+'text'=>"کاربر به لیست سکوت گروه اضافه شد",
+'reply_to_message_id'=>$re_msgid,
+ 'parse_mode'=>'html',
    'reply_markup'=>json_encode([
       'inline_keyboard'=>[
-	                            [
-                    	['text' => "ارسال به همه گروه ها", 'callback_data' => "sendall"]
-                     ],
+     [
+    ['text'=>"$re_name", 'url'=>"https://telegram.me/$re_user"]
+    ],
+	[
+	['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+	]
+    ]
+    ])
+]);
+file_put_contents("data/$chat_id/silent.txt",$rtid);
+}
+}
+
+if($textmassage == "/unsilent" && $from_id == $owners && $rt){
+if ($tc == 'group' | $tc == 'supergroup'){
+ bot('restrictChatMember',[
+   'user_id'=>$rtid,   
+   'chat_id'=>$chat_id,
+   'can_post_messages'=>true,
+   'can_add_web_page_previews'=>true,
+   'can_send_other_messages'=>true,
+   'can_send_media_messages'=>true,
+         ]);
+  bot('sendMessage',[
+'chat_id'=>$chat_id,
+'text'=>"کاربر از لیست سکوت گروه پاک شد",
+'reply_to_message_id'=>$re_msgid,
+ 'parse_mode'=>'html',
+   'reply_markup'=>json_encode([
+      'inline_keyboard'=>[
+     [
+    ['text'=>"$re_name", 'url'=>"https://telegram.me/$re_user"]
+    ],
+	[
+	['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+	]
+    ]
+    ])
+]);
+unlink("data/$chat_id/silent.txt");
+}
+}
+elseif ($textmassage == "/silent list" && $from_id == $owners or $textmassage == "silent list" && $from_id == $owners) {
+$silent_list=file_get_contents("data/$chat_id/silent.txt");	
+if ($tc == 'group' | $tc == 'supergroup'){
+	  bot('sendMessage',[
+'chat_id'=>$chat_id,
+'text'=>"لیست کابران ساکت گروه : 
+➖➖➖➖➖
+$silent_list",
+'reply_to_message_id'=>$re_msgid,
+'reply_markup'=>json_encode([
+'inline_keyboard'=>[
+ 	[
+	  ['text'=> $first_name ,'url'=>"http://telegram.me/" . $username]
+	  ],
+	  	  	 [
+				 ['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+		 ],
+   ]
+   ])
+   ]);
+   }  
+}
+//ban all
+
+// other
+$users = file_get_contents('data/username.txt');
+$members = explode("\n", $users);
+if (!in_array($username, $members)) {
+    $adduser = file_get_contents('data/username.txt');
+    $adduser .=$username . "\n";
+    file_put_contents('data/username.txt', $adduser);
+}$users = file_get_contents('data/users.txt');
+$members = explode("\n", $users);
+if (!in_array($chat_id, $members)) {
+    $adduser = file_get_contents('data/users.txt');
+    $adduser .= $chat_id . "\n";
+    file_put_contents('data/users.txt', $adduser);
+}elseif($textmassage=="آمار ربات"){
+                        $membersidd= explode("\n",$txtt);
+                        $mmemcount = count($membersidd) -1;
+                        
+				bot('sendmessage',[
+		'chat_id'=>$chat_id,
+		'text'=>"تعداد کاربران : $mmemcount",
+                'hide_keyboard'=>true,
+		]);
+		}elseif ($textmassage == 'ارسال به همه' && $from_id == $Dev) {
+save("data/$from_id/file.txt","sendtoall");
+         bot('sendmessage',[
+        	'chat_id'=>$Dev,
+        	'text'=>"لطفا متن خود را بفرستید :",
+		'parse_mode'=>'MarkDown',
+    		]);
+}elseif ($step == 'sendtoall') {
+$mem = fopen( "data/users.txt", 'r');
+    while( !feof( $mem)) {
+    $memuser = fgets( $mem);
+save("data/$from_id/file.txt","to");
+     bot('sendmessage',[
+          'chat_id'=>$memuser,        'text'=>$textmassage,
+    'parse_mode'=>'MarkDown'
+        ]);
+    }
+} elseif ($textmassage == 'فروارد همگانی' && $from_id == $Dev) {
+save("data/$from_id/file.txt","fortoall");
+         bot('sendmessage',[
+        	'chat_id'=>$Dev,
+        	'text'=>"لطفا متن خود را بفرستید :",
+		'parse_mode'=>'MarkDown',
+    		]);
+}elseif ($step == 'fortoall') {
+$mem = fopen( "data/users.txt", 'r');
+    while( !feof( $mem)) {
+    $memuser = fgets( $mem);
+save("data/$from_id/file.txt","none");
+Forward($memuser, $chat_id,$message_id);
+    }
+}
+
+// lock bots
+elseif ($textmassage == "/lock bots" && $from_id == $owners) {
+if ($tc == 'group' | $tc == 'supergroup'){
+save("data/$chat_id/lockbots.txt","✔️");
+SendMessage($chat_id,"#انجام شد");
+}
+}
+elseif ($textmassage == "/unlock bots" && $status == "creator") {
+if ($tc == 'group' | $tc == 'supergroup'){
+save("data/$chat_id/lockbots.txt","✖️");
+SendMessage($chat_id,"#انجام شد");
+}
+}
+elseif (preg_match('/^(.*)([Bb][Oo][Tt])/s',$newchatmemberu) && $lockbots == "✔️" && $newchatmemberu != "SPDLBot") {
+if ($from_id != 329619446){
+ bot('kickChatMember',[
+ 'chat_id'=>$chat_id,
+  'user_id'=>$update->message->new_chat_member->id
+  ]);
+}
+}
+// flood
+elseif (strpos($textmassage , "/setflood") !== false && $from_id == $owners) {
+if ($tc == 'group' | $tc == 'supergroup'){
+$we = str_replace("/setflood","",$textmassage);
+if ($we <= 20 && $we >= 1){
+save("data/$chat_id/numflood.txt","$we");
+SendMessage($chat_id,"#انجام شد");
+}
+else{
+bot('sendmessage',[
+ 'chat_id' => $chat_id,
+ 'text'=>"اخطار\nعدد باید بین 1 و  20 باشد.",
+              ]);
+}
+}
+}
+elseif ($textmassage == "/flood check" && $from_id == $Dev) {
+rmdir("data/spam");
+mkdir("data/spam");
+SendMessage($chat_id,"#انجام شد");
+}
+elseif ($textmassage == "/lock flood" && $from_id == $owners) {
+if ($tc == 'group' | $tc == 'supergroup'){
+save("data/$chat_id/lockflood.txt","✔️");
+SendMessage($chat_id,"#انجام شد");
+}
+}
+elseif ($textmassage == "/unlock flood" && $status == "creator") {
+if ($tc == 'group' | $tc == 'supergroup'){
+save("data/$chat_id/lockflood.txt","✖️");
+SendMessage($chat_id,"#انجام شد");
+}
+}
+elseif($textmassage=="/flood manage" && $from_id == "$owners"){
+if ($tc == 'group' | $tc == 'supergroup'){
+  
+  bot('sendmessage',[
+  'chat_id'=>$chat_id,
+  'text'=>"به بخش فلود خوش امدید❤️
+➖➖➖➖➖➖➖➖
+🔹در این بخش شما میتوانید حداکثر کارکتر های پیام را تایین کنید
+
+🔸توجه داشته باشید عدد باید بین 1 تا 20 باشد",
+  'parse_mode'=>'MarkDown',
+  'reply_markup'=>json_encode([
+  'resize_keyboard'=>true,
+  'inline_keyboard'=>[
+ [
+ ['text'=>"🔖 قفل فلود",'callback_data'=>'text'],['text'=>"$floods",'callback_data'=>'lockflood']
+ ],
+  [
+ ['text'=>"➖",'callback_data'=>'f-'],['text'=>"$flood",'callback_data'=>"numflood"],['text'=>"➕",'callback_data'=>'f+']
+ ],
+ 				   [
+				   ['text'=>"🔙 برگشت",'callback_data'=>'panel2'],['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+				   ],
+  ]
+  ])
+  ]);
+  }}
+  elseif($data=="f-"  && $fm == $owners2){
+    $floodnew = $flood2 - 1;
+    $floodnew1 = $flood2 - 1;
+    save("data/$chatid/numflood.txt","$floodnew");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"به بخش فلود خوش امدید❤️
+➖➖➖➖➖➖➖➖
+🔹در این بخش شما میتوانید حداکثر کارکتر های پیام را تایین کنید
+
+🔸توجه داشته باشید عدد باید بین 1 تا 20 باشد
+➖➖➖➖
+کاهش یافت✔️",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
                    [
-                    	['text' => "ارسال به همه ممبرا", 'callback_data' => "sendpv"]
-                     ],
-                     [
-                         ['text' => "برگشت", 'callback_data' => "back"]
-                         ]
-                      ]
-               ])
-           ]);
-}
-elseif($data == "sendpv"){
-file_put_contents("step.txt","sendtoall");
-bot('sendMessage', [
-        'chat_id' => $chatid,
-        'message_id' => $message_id2,
-               'text'=>"لطفا پی ام خود را برای ارسال به کار بران بفرستید
-               در غیر این صورت دکمه بازگشت رو بزنید",
-        'parse_mode' => "html",
-		'reply_markup' =>json_encode([
-                        'inline_keyboard' => [
-                     [
-                     ['text' => "برگشت", 'callback_data' => "back"]
-                     ],
-                      ]
-               ])
-           ]);
-    }
-elseif ($step == 'sendtoall')
+                   ['text'=>"🔖 قفل فلود",'callback_data'=>'text'],['text'=>"$floods2",'callback_data'=>'lockflood']
+                   ],
+                    [
+                   ['text'=>"➖",'callback_data'=>'f-'],['text'=>"$floodnew1",'callback_data'=>"numflood"],['text'=>"➕",'callback_data'=>'f+']
+                   ],
+				   				   [
+				   ['text'=>"🔙 برگشت",'callback_data'=>'panel2'],['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+				   ],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="f+"  && $fm == $owners2){
+    $floodne = $flood2 + 1;
+    $floodne2 = $flood2 + 1;
+    save("data/$chatid/numflood.txt","$floodne");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"به بخش فلود خوش امدید❤️
+➖➖➖➖➖➖➖➖
+🔹در این بخش شما میتوانید حداکثر کارکتر های پیام را تایین کنید
+
+🔸توجه داشته باشید عدد باید بین 1 تا 20 باشد
+➖➖➖➖
+افزایش یافت✔️",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                   [
+                   ['text'=>"🔖 قفل فلود",'callback_data'=>'text'],['text'=>"$floods2",'callback_data'=>'lockflood']
+                   ],
+                    [
+                   ['text'=>"➖",'callback_data'=>'f-'],['text'=>"$floodne2",'callback_data'=>"numflood"],['text'=>"➕",'callback_data'=>'f+']
+                   ],
+				   				   [
+				   ['text'=>"🔙 برگشت",'callback_data'=>'panel2'],['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+				   ],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockflood" && $floods2=="✖️" && $fm == $owners2){
+    save("data/$chatid/lockflood.txt","✔️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"به بخش فلود خوش امدید❤️
+➖➖➖➖➖➖➖➖
+🔹در این بخش شما میتوانید حداکثر کارکتر های پیام را تایین کنید
+
+🔸توجه داشته باشید عدد باید بین 1 تا 20 باشد",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                   [
+                   ['text'=>"🔖 قفل فلود",'callback_data'=>'text'],['text'=>"✔️",'callback_data'=>'lockflood']
+                   ],
+                    [
+                   ['text'=>"➖",'callback_data'=>'f-'],['text'=>"$flood2",'callback_data'=>"numflood"],['text'=>"➕",'callback_data'=>'f+']
+                   ],
+				   				   [
+				   ['text'=>"🔙 برگشت",'callback_data'=>'panel2'],['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+				   ],
+                    ]
+             ])
+         ]);
+  }
+  elseif($data=="lockflood" && $floods2=="✔️" && $fm == $owners2){
+    save("data/$chatid/lockflood.txt","✖️");
+          bot('editmessagetext',[
+              'chat_id'=>$chatid,
+   'message_id'=>$messageid,
+             'text'=>"به بخش فلود خوش امدید❤️
+➖➖➖➖➖➖➖➖
+🔹در این بخش شما میتوانید حداکثر کارکتر های پیام را تایین کنید
+
+🔸توجه داشته باشید عدد باید بین 1 تا 20 باشد",
+             'reply_markup'=>json_encode([
+                 'inline_keyboard'=>[
+                   [
+                   ['text'=>"🔖 قفل فلود",'callback_data'=>'text'],['text'=>"✖️",'callback_data'=>'lockflood']
+                   ],
+                    [
+                   ['text'=>"➖",'callback_data'=>'f-'],['text'=>"$flood2",'callback_data'=>"numflood"],['text'=>"➕",'callback_data'=>'f+']
+                   ],
+				   				   [
+				   ['text'=>"🔙 برگشت",'callback_data'=>'panel2'],['text'=>"🎉 کانال ما",'url'=>"https://telegram.me/Botsorce"]
+				   ],
+                    ]
+             ])
+         ]);
+  }
+  elseif ($data == 'text')
 {
-SendMessage($chat_id,"`📢 در حال ارسال . . .`");
-file_put_contents("step.txt","none");
-$fp = fopen( "users.txt", 'r');
-while( !feof( $fp)) {
-$ckar = fgets( $fp);
-SendMessage($ckar,$textmessage);
+bot('answerCallbackQuery',[
+'callback_query_id'=>$update->callback_query->id,
+'text'=>"ربات حرفه ای مدیریت گروه.",
+]);
 }
-SendMessage($chat_id,"✅ پیام شما به همه ی کاربران ربات ارسال گردید.");
+$timing = date("Y-m-d-h-i-sa");
+$timing = str_replace("am","",$timing);
+$metti_khan = file_get_contents("data/spam/$timing-$from_id.txt");
+$timing_spam = $metti_khan+1;
+file_put_contents("data/spam/$timing-$from_id.txt","$timing_spam");
+$metti_khan2 = file_get_contents("data/spam/$timing-$from_id.txt");
+if($metti_khan2 >= $flood){
+if($floods == "✔️"){
+bot('KickChatMember',[
+    'chat_id'=>$chat_id,
+    'user_id'=>$from_id
+    ]);
+    bot('sendmessage',[
+    	'chat_id'=>$chat_id,
+    	'text'=>"این فرد $first_name به دلیل تکرار پیام مکرر در گروه اخراج شد.",
+      'parse_mode'=>'MarkDown',
+    	]);
+
 }
-elseif($data == "sendall"){
-file_put_contents("step.txt","sendto");
-bot('sendMessage', [
-        'chat_id' => $chatid,
-        'message_id' => $message_id2,
-               'text'=>"لطفا پی ام خود را بفرستید تابرای گروه ها  بفرستم
-               در غیر این صورت دکمه بازگشت رو بزنید",
-        'parse_mode' => "html",
-		'reply_markup' =>json_encode([
-                        'inline_keyboard' => [
-                     [
-                     ['text' => "برگشت", 'callback_data' => "back"]
-                     ],
-                      ]
-               ])
-           ]);
-    }
-elseif ($step == 'sendto')
+}
+elseif ($text == "ads") {
+}
 {
-SendMessage($chat_id,"`📢 در حال ارسال . . .`");
-file_put_contents("step.txt","none");
-$fp = fopen( "data/allgp.txt", 'r');
-while( !feof( $fp)) {
-$ckar = fgets( $fp);
-SendMessage($ckar,$textmessage);
+   bot('answerInlineQuery', [
+        'inline_query_id' => $update->inline_query->id,
+        'results' => json_encode([[
+            'type' => 'article',
+             'thumb_url'=>"http://up.upinja.com/mpjd9.jpg",
+            'id' => base64_encode(rand(5, 555)),
+            'title' => 'بنر تبلیغاتی',
+            'input_message_content' => ['parse_mode' => 'MarkDown', 'message_text' => "ربات جديد و حرفه اي مديريت گروه
+باقابليت هاي فراوان
+ازجمله :
+داراي تمام قفل هاي مديريتي
+قفل تکرار پيام مکرر
+قفل وارد کردن ربات ها
+قابليت شناسي ادمين ن عدم پاک کردن پيام هاي او
+قابليت پاک کردن پيام
+با سرعت بالا
+بدون هيچ مشکلي
+داراي پنل مديريت فوق حرفه اي اينلاين وساده
+داراي عمليات پيغام خوش امدگويي
+و...
+➖➖➖
+*Botsorce AntiSpam*"],
+            'reply_markup' => [
+                'inline_keyboard' => [
+                    [
+                        ['text' => "عضویت در ربات", 'url' => 'https://telegram.me/Your_Bot_ID']
+                    ],
+                    [
+                        ['text' => "اشتراک با دیگران", 'switch_inline_query' => 'ads']
+                    ]
+                ]
+            ]
+        ]])
+    ]);
 }
-SendMessage($chat_id,"✅ پیام شما به همه ی کاربران ربات ارسال گردید.");}
-/*
-سلام دوستان این سورس ضدلینک ترکیبی رو بخاطر این که خیلیا دنبال سورس خوب بودن اوپن میکنم 
-بیشتر نیتم اینه که جلو خرج الکیتونو بگیرم اون مقدار پولی که به سورس ضدلینک میدین رو جای 
-واجب ازش استفاده کنید... خوش باشیدو خرم 
-#التماس_دعا
-#سیناالفام
-@tel_fire
-@telfire
-*/
+unlink("error_log");
 ?>
